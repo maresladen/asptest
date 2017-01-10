@@ -1,0 +1,102 @@
+@{
+    ViewData["Title"] = "主页";
+}
+
+<!--<body class="docs">-->
+
+     <!--<link href="./css/css.css" rel="stylesheet" type="text/css">-->
+    <!--<link href="./css/comcss.css" rel="stylesheet" type="text/css">-->
+
+    <!-- main page styles -->
+    <link rel="stylesheet" href="~/css/page.css">
+
+    <!-- this needs to be loaded before guide's inline scripts -->
+    <script async="" src="~/js/analytics.js"></script>
+    <script>window.PAGE_TYPE = "guide"</script>
+
+<div id="main" class="fix-sidebar">
+    <div class="sidebar">
+        <div class="list">
+            <ul class="menu-root">
+                <li>
+                    <h3>PC前台</h3>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="sidebar-link">文件上传</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="sidebar-link">地图展示</a>
+                </li>
+                <li>
+                    <h3>PC后台</h3>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="sidebar-link">数据绑定</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="sidebar-link">地图展示</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="content guide with-sidebar installation-guide">
+
+<!--页面展示-->
+
+<h3 id="-">文件上传功能</h3>
+<p>上传文件到文件服务器，文件服务器会返回地址给页面，然后进行后续的保存操作。</p>
+<hr>
+<h3 id="html-">html代码</h3>
+<table>
+    <tr>
+        <td  class="code">
+
+<pre><code class="lang-html">
+&lt;div class="col-sm-12"&gt;
+&lt;input type="button" class="btn btn-default btn-lg" value="上传照片"&gt; &lt;input id="cdzzjg" type="file" class="form-control "
+    style="position: absolute; top: 0; opacity: 0;" onchange="upPics('#cdzzjg','#cdupzzjg','#cdlblzzjg')"&gt;
+&lt;input type="text" id="cdupzzjg" name="organ" style="display:none"&gt;
+&lt;label id="cdlblzzjg"&gt;请上传组织机构代码&lt;/label&gt;
+&lt;/div&gt;
+</code></pre>
+
+        </td>
+    </tr>
+</table>
+<hr>
+<h3 id="js-">js代码</h3>
+<pre><code class="lang-javascript">
+
+function upPics(upContorl,imgControl,lblControl) {
+    var formData = new FormData();
+    formData.append('file', $(upContorl)[0].files[0]);
+    $.ajax({
+        url : '${projectPath}photoUpdate/imguploadFile.json',
+        type : 'POST',
+        cache : false,
+        data : formData, 
+        processData : false,
+        contentType : false
+    }).done(function(res) {
+        //TODO: 这里把图片放到form表单中的字段里面
+        console.log(res)
+        $(imgControl)[0].value=res.data
+        $(lblControl)[0].innerText ="上传成功"
+    }).fail(function(res) {
+        console.log('失败')
+    });
+}
+</code></pre>
+
+
+<!--页面展示-->
+
+
+
+    </div>
+
+</div>
+
+<ript src="~/js/common.js"></script>

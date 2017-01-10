@@ -1,0 +1,336 @@
+@model List<WebApplication.Models.Employee>
+
+<style>
+
+* {
+				font-family: simhei, Helvetica, Arial, sans-serif;
+			}
+
+			#dialog-template{
+				display: none;
+			}			
+			
+			.btn {
+				display: inline-block;
+				border: 0;
+				box-sizing: border-box;
+				background: #fff;
+				color: #69656E;
+				font-size: 1.5em;
+				border-radius: .1em;
+				line-height: 2em;
+				padding: 0 1em;
+				transition: .4s ease-out;
+				border: 1px solid #000;
+				outline: 0;
+				text-decoration: none;
+			}
+			
+			.btn:hover,
+			.btn:focus {
+				background: #d2d6de;
+				color: #000;
+				cursor: pointer;
+				transition: .25s ease-in;
+			}
+			
+			.dialog {
+				width: 480px;
+				position: fixed;
+				left: 50%;
+				top: 2em;
+				transform: translateX(-50%);
+				z-index: 2000;
+				visibility: hidden;
+				backface-visibility: hidden;
+				perspective: 1300px;
+			}
+			
+			.dialog-active {
+				visibility: visible;
+			}
+			
+			.dialog-active .dialog-content {
+				position: relative;
+				opacity: 1;
+				transform: rotate(0);
+			}
+			
+			.dialog-active ~ .dialog-overlay {
+				opacity: 1;
+				visibility: visible;
+			}
+			
+			.dialog-content {
+				border-radius: 3px;
+				background: #fff;
+				overflow: hidden;
+				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+				transition: .5s ease-in-out;
+				opacity: 0;
+				transform-style: preserve-3d;
+				transform: rotateY(-70deg);
+			}
+			
+			.dialog-header {
+				background: #d2d6de;
+				color: #fff;
+			}
+			
+			.dialog-title {
+				margin: 0;
+				font-size: 2em;
+				text-align: center;
+				font-weight: 200;
+				line-height: 2em;
+			}
+			
+			.dialog-body {
+				padding: 2em;
+			}
+			
+			.dialog-footer {
+				margin: 0 2em;
+				padding: 2em 0;
+				text-align: right;
+				border-top: 1px solid rgba(0, 0, 0, 0.1);
+			}
+			
+			.dialog-overlay {
+				content: "";
+				position: fixed;
+				visibility: hidden;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				z-index: 1000;
+				opacity: 0;
+				background: rgba(0, 0, 0, 0.5);
+				transition: all .6s;
+			}
+			
+			.close {
+				display: inline-block;
+				width: 2rem;
+				height: 2rem;
+				position: absolute;
+				top: .5rem;
+				right: .5rem;
+				transition: .8s ease all;
+				-moz-transition: .8s ease all;
+				-webkit-transition: .8s ease all;
+				border: none;
+				border-radius: 3px;
+				color: #333;
+				text-decoration: none;
+				box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				opacity:1;
+			}
+			
+			.close:hover {
+				transition: .8s ease all;
+				-moz-transition: .8s ease all;
+				-webkit-transition: .8s ease all;
+				opacity:1;
+			}
+			
+			.close .iconfont {
+				font-size: 2rem;
+				color: #fff;
+			}
+			
+			.rotate {
+				cursor: pointer;
+			}
+			
+			.rotate:hover {
+				transform: rotate(360deg);
+				-moz-transform: rotate(360deg);
+				-webkit-transform: rotate(360deg);
+				transition: transform 0.5s ease all;
+				-moz-transition: -moz-transform 0.5s ease all;
+				-webkit-transition: -webkit-transform 0.5s ease all;
+			}
+
+</style>
+<template id="dialog-template">
+    <div class="dialogs">
+        <div class="dialog" v-bind:class="{ 'dialog-active': show }">
+            <div class="dialog-content">
+                <div class="close rotate">
+                    <span class="icon fa" v-on:click="close" style="background: url(../../images/elephant.png);background-size:24px 24px;width: 24px;height: 24px "></span>
+
+                </div>
+                <slot name="header"> <i class="icon fa fa-warning"></i> </slot>
+                <slot name="body"></slot>
+                <slot name="footer"></slot>
+            </div>
+        </div>
+        <div class="dialog-overlay"></div>
+    </div>
+</template>
+
+
+
+	<h1>测试用户</h1>
+	<div id ="mainTable">
+	<table border="1">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>LastName</th>
+				<th>按钮</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr v-for="(item,index) in myData">
+				<td>{{ item.id}}</td>
+				<td>{{ item.name}}</td>
+				<td>
+					<input type="text" name="lastName" v-model="item.lastName"></input>
+					</td>
+				<td>
+					<a asp-action="Edit">编辑</a>
+					<button  v-on:click="hehe(item.id,item.lastName,index)">显示</button>
+				</td>
+			</tr>
+		</tbody>
+		
+
+		</table>
+			<button onclick="alert()">click me</button>
+			<button onclick="bbb()">click test</button>
+		</div>
+
+
+
+
+<div id="app">
+    <modal-dialog v-bind:show.sync="show" v-on:close="closeDialog">
+
+        <header class="dialog-header" slot="header">
+            <h1 class="dialog-title">提示信息</h1>
+        </header>
+
+        <div class="dialog-body" slot="body">
+			<p>{{msgContent}}</p>
+        </div>
+
+        <footer class="dialog-footer" slot="footer">
+            <button class="btn" v-on:click="closeDialog" >关闭</button>
+        </footer>
+    </modal-dialog>
+
+    <button class="btn" v-on:click="openDialog">打开对话框</button>
+</div>
+
+
+	<script type="text/javascript">
+
+$(function(){
+
+	window.alert = function(){
+		abc.openDialog();
+	}
+})
+
+
+
+	function bbb(){
+		var temp =  '@ViewData["idtest"]';
+		alert(temp)
+	}
+
+var abc = new Vue({
+	el:'#mainTable',
+	data:{
+		//强类型数据，序列化
+		myData : JSON.parse('@Json.Serialize(Model)'),
+		//通过html解析json
+		testData :  JSON.parse('@Html.Raw(ViewData["testData"])'),
+		msg:'',
+		type:''
+	},
+	methods:{
+		test : function(){
+			console.log(this.testData[0].e.PasswordHash);
+		},
+		test1 : function(){
+			var tempForm = new FormData();
+			tempForm.append("id",4)
+			tempForm.append("LastName",'你好')
+			this.$http.post('http://localhost:5000/Home/UpLastName',tempForm,{emulateJSON:true}).then((rep) =>{
+				console.log(rep.data.id)
+			},(rep) =>{
+				console.log('失败')
+			});
+		},
+		hehe :function(id,ln,ind){
+
+			console.log(id+' --- '+ln +' --- '+ind)
+		},
+		tempTest :function(strMsg,strtype){
+			this.msg =strMsg;
+			this.type =strtype;
+
+		}
+	}
+})
+
+
+Vue.component('modal-dialog', {
+        template: '#dialog-template',
+        props: ['show'],
+				
+				// modalInco :function(){
+				// 		switch (msgType){
+				// 			case 'info':
+				// 			this.msgTypeName = '提示！';
+				// 			return 'fa-info'
+				// 			break;
+				// 			this.msgTypeName = '警告！';
+				// 			case 'warning':
+				// 			return 'fa-warning'
+				// 			break;
+				// 			case 'error':
+				// 			this.msgTypeName = '错误！';
+				// 			return 'fa-ban'
+				// 			break;
+				// 			case 'success':
+				// 			this.msgTypeName = '成功！';
+				// 			return 'fa-check'
+				// 			break;
+				// 	}
+				// },
+        methods: {
+           close: function() {
+				this.$emit('close');
+       		 } 
+        }
+    })
+
+
+  var abc =  new Vue({
+        el: '#app',
+        data: {
+            show: false,
+			msgContent :'',
+			msgType :'',
+			msgTypeName :''
+        },
+        methods: {
+            openDialog: function() {
+				this.msgContent ='你好';
+                this.show = true
+            },
+            closeDialog: function() {
+                this.show = false
+            }
+        }
+    })
+
+		
+</script>

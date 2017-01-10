@@ -1,0 +1,139 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--<script src="~/js/vue.js"></script>-->
+    <script src="~/js/marked.min.js"></script>
+    <script src="~/js/Underscore.js"></script>
+    <!--<script src="~/js/jquery-3.1.1.js"></script>-->
+    <style >
+        html, body, #editor {
+            margin: 0;
+            height: 100%;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+        }
+
+        textarea, #editor div {
+            display: inline-block;
+            width: 49%;
+            height: 100%;
+            vertical-align: top;
+            box-sizing: border-box;
+            padding: 0 20px;
+        }
+
+        textarea {
+            border: none;
+            border-right: 1px solid #ccc;
+            resize: none;
+            outline: none;
+            background-color: #f6f6f6;
+            font-size: 14px;
+            font-family: 'Monaco', courier, monospace;
+            padding: 20px;
+        }
+
+        code {
+            color: #f66;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    $(function () {
+        $('textarea').on({
+            dragleave:function(e){    //拖离
+                e.preventDefault();
+                $('#editor textarea').attr('style','background-color: white;')
+            },
+            drop:function(e){  //拖后放
+                e.preventDefault();
+                $('#editor textarea').attr('style','background-color: white;')
+            },
+            dragenter:function(e){    //拖进
+                e.preventDefault();
+                $('#editor textarea').attr('style','background-color: wheat;')
+            },
+            dragover:function(e){    //拖来拖去
+                e.preventDefault();
+            }
+        });
+
+        var box = $('textarea')[0]; //拖拽区域
+
+        box.addEventListener("drop",function(e){
+            e.preventDefault(); //取消默认浏览器拖拽效果
+
+            var fileList = e.dataTransfer.files; //获取文件对象
+            for (var i = 0; i < fileList.length; i++) {
+
+                    //检测是否是拖拽文件到页面的操作
+                    if (fileList.length == 0) {
+                        return false;
+                    }
+                    //检测文件是不是css和js
+                    if (fileList[i].type.indexOf('javascript') === -1 && fileList[i].type.indexOf('css') === -1 && fileList[i].type.indexOf('image') === -1) {
+                        console.log(fileList[i].type);
+                        alert("仅允许上传js、css、图片文件！");
+                        return false;
+                    }
+
+                    //拖拉文件到浏览器
+                    var img = window.URL.createObjectURL(fileList[i]);
+                    var filename = fileList[i].name; //文件名称
+                    var filesize = Math.floor((fileList[i].size) / 10240);
+                    if (filesize > 10240) {
+                        alert("单个文件大小不允许超过10兆");
+                        return false;
+                    }
+                    else {
+                        editerVue.input +="\n " +filename;
+                        console.log(filename)
+                    }
+             }
+        //    原本是图片上传功能
+        //    var str = "<img src='"+img+"'><p>图片名称："+filename+"</p><p>大小："+filesize+"KB</p>";
+        //    $("#preview").html(str);
+
+        //    //上传
+        //    xhr = new XMLHttpRequest();
+        //    xhr.open("post", "upload.php", true);
+        //    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+        //    var fd = new FormData();
+        //    fd.append('mypic', fileList[0]);
+
+        //    xhr.send(fd);
+      },false);
+    })
+
+
+</script>
+
+    <div id="editor">
+            <textarea v-bind:value="input" v-on:input="update"></textarea>
+    <div id="editorHTML" v-html="compiledMarkdown"></div>
+
+    </div>
+
+        <script>
+          var editerVue =  new Vue({
+                el: '#editor',
+                data: {
+                    input: '## 此处为markdown语法 \n https://segmentfault.com/markdown'
+                },
+                computed: {
+                    compiledMarkdown: function () {
+                        return marked(this.input, { sanitize: true })
+                    }
+                },
+                methods: {
+                    update: _.debounce(function (e) {
+                        this.input = e.target.value
+                    }, 300)
+                }
+            })
+        </script>
+</body>
+</html>
