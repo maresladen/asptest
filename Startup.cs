@@ -13,7 +13,6 @@ using MySQL.Data.EntityFrameworkCore.Extensions;
 using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebApplication
 {

@@ -13,13 +13,13 @@ using Newtonsoft.Json.Linq;
 using WebApplication.Data;
 using WebApplication.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebApplication.Controllers
 {
     // 角色认证
     // [Authorize(Roles = "NormalUser")]
     // claim认证 需要在中间件注册时，增加此身份信息
+    [Route("Project")]
     [Authorize(Policy = "manager")]
     public class ProjectController : Controller
     {
@@ -34,25 +34,35 @@ namespace WebApplication.Controllers
             this._signinManager =signinManager;
         }
 
-        [HttpGet]
-        public IActionResult Manage()
+        [HttpGetAttribute]
+        [RouteAttribute("/Project/{id?}")]
+        public IActionResult Manage(int id)
         {
-            // if(string.IsNullOrEmpty(User.Identity.Name)){
-            //      return RedirectToAction(nameof(HomeController.Index), "Home");
-            // }
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption)){
+                // var query = from p in dbcon.Projects
+                //                 var query = from e in dbcon.Users
+                //             join ur in dbcon.UserRoles on e.Id equals ur.UserId
+                //             join r in dbcon.Roles on ur.RoleId equals r.Id
+                //             where e.Id == loginId
+                //             select new { e, r.Name };
+
+
+                //             //通过传入的页和请求条目量取数据
+                //             // dbcon.Users.Skip(1*10).Take(10);
+
+
+                // var result = await query.ToListAsync();
+
+                // var finRes = JsonConvert.SerializeObject(result, Formatting.None);
+                // ViewData["testData"] = finRes;
+                // return View(await dbcon.Employees.ToListAsync());
+                ViewData["proData"] = dbcon.Projects.ToListAsync();
+            }
             return View();
         }
-
-
-
-        [HttpGet]
-        public IActionResult Get(int id)
-        {
-            return View();
-        }
-
         
         [HttpPost]
+        [Route("/Project/{id}")]
         public IActionResult Post([FromBody]JObject  jsonObj)
         {
             dynamic Jsondm = jsonObj;
@@ -88,7 +98,8 @@ namespace WebApplication.Controllers
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("/Project/{id}")]
         public IActionResult Put([FromBody]JObject  jsonObj)
         {
             dynamic Jsondm = jsonObj;
@@ -126,6 +137,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpDelete]
+        [Route("/Project/{id}")]
         public IActionResult delete(Project proEntity)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
@@ -145,5 +157,17 @@ namespace WebApplication.Controllers
             }
             return Json("successs");
         }
+
+
+        #region API接口
+
+        [HttpGet]
+        [RouteAttribute("/API/Project/{id?}")]
+        public IActionResult ApiGet(int id){
+            return Json("ok");
+        }
+
+
+        #endregion
    }
 }
