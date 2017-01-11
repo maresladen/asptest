@@ -145,14 +145,14 @@
 				cursor: pointer;
 			}
 			
-			.rotate:hover {
+			/*.rotate:hover {
 				transform: rotate(360deg);
 				-moz-transform: rotate(360deg);
 				-webkit-transform: rotate(360deg);
 				transition: transform 0.5s ease all;
 				-moz-transition: -moz-transform 0.5s ease all;
 				-webkit-transition: -webkit-transform 0.5s ease all;
-			}
+			}*/
 
 </style>
 <template id="dialog-template">
@@ -161,10 +161,9 @@
             <div class="dialog-content">
                 <div class="close rotate">
                     <span class="icon fa" v-on:click="close" style="background: url(../../images/elephant.png);background-size:24px 24px;width: 24px;height: 24px "></span>
-
                 </div>
                 <slot name="header"> <i class="icon fa fa-warning"></i> </slot>
-                <slot name="body"></slot>
+                <slot name="body"> </slot>
                 <slot name="footer"></slot>
             </div>
         </div>
@@ -207,7 +206,6 @@
 
 
 
-
 <div id="app">
     <modal-dialog v-bind:show.sync="show" v-on:close="closeDialog">
 
@@ -228,20 +226,38 @@
 </div>
 
 
-	<script type="text/javascript">
+<div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="testModalLabel" aria-hidden="false">
+    <div class="modal-dialog" style="width: 100%">
+        <div class="modal-content">
+                <div class="close rotate">
+                    <span class="icon fa fa-close" onclick="$('#testModal').modal('hide')"></span>
+                </div>
+            <div class="alert bg-gray">
+                <h4><i class="icon fa fa-edit"></i>新增功能块 
+                </h4>
+            </div>
+            <div class="modal-body">
+ @Html.Partial("../Project/Manage.cshtml")
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭 </button>
+            </div>
+        </div>
+    </div>
+</div>
 
+
+<script>
 $(function(){
 
 	window.alert = function(){
 		abc.openDialog();
 	}
 })
-
-
-
 	function bbb(){
-		var temp =  '@ViewData["idtest"]';
-		alert(temp)
+		// var temp =  '@ViewData["idtest"]';
+		// alert(temp)
+                $('#testModal').modal('show');
 	}
 
 var abc = new Vue({

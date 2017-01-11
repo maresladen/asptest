@@ -24,7 +24,7 @@ namespace WebApplication.Controllers
     public class ProjectController : Controller
     {
 
-        ApplicationDbContext Dbcon;
+        // ApplicationDbContext Dbcon;
         DbContextOptions<ApplicationDbContext> dbconOption;
 
         private readonly SignInManager<ApplicationUser> _signinManager;
@@ -35,7 +35,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet]
-        public IActionResult Manage(int id)
+        public IActionResult Manage()
         {
             // if(string.IsNullOrEmpty(User.Identity.Name)){
             //      return RedirectToAction(nameof(HomeController.Index), "Home");
@@ -43,52 +43,104 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        public IActionResult ProSave([FromBody]JObject  jobj){
-            dynamic Jsondm =jobj;
+
+
+        [HttpGet]
+        public IActionResult Get(int id)
+        {
+            return View();
+        }
+
+        
+        [HttpPost]
+        public IActionResult Post([FromBody]JObject  jsonObj)
+        {
+            dynamic Jsondm = jsonObj;
 
             Project proEntity = Jsondm.proEntity.ToObject<Project>();
 
             ProjectDepend[] proDepLst = Jsondm.proDepLst.ToObject<ProjectDepend[]>();
-            // using (var scope = new TransactionScope())
-            // { }
-            using (Dbcon = new ApplicationDbContext(dbconOption)){
-                Dbcon.Database.BeginTransaction();
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                dbcon.Database.BeginTransaction(); 
                 try{
-                    if (proEntity.projectId != 0)
+                    dbcon.Projects.Add(proEntity);
+                    dbcon.SaveChanges();
+                    if (proDepLst.Length > 0)
                     {
-                        //这里做update
-                        Dbcon.Projects.Update(proEntity);
-                        //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
-                        string strDel = string.Format( "delete from ProjectDepend where projectId ={0};",proEntity.projectId);
-                        Dbcon.Database.ExecuteSqlCommand(strDel);
-
-                        if (proDepLst.Length > 0)
+                        foreach (ProjectDepend ent in proDepLst)
                         {
-                            foreach (ProjectDepend ent in proDepLst)
-                            {
-                                ent.projectId = proEntity.projectId;
-                                Dbcon.ProjectDepends.Add(ent);
-                            }
+                            ent.projectId = proEntity.projectId;
+                            dbcon.ProjectDepends.Add(ent);
                         }
                     }
-                    else{
-                        Dbcon.Projects.Add(proEntity);
-                        Dbcon.SaveChanges();
-                        if (proDepLst.Length > 0)
-                        {
-                            foreach (ProjectDepend ent in proDepLst)
-                            {
-                                ent.projectId = proEntity.projectId;
-                                Dbcon.ProjectDepends.Add(ent);
-                            }
-                        }
-                    }
-                    Dbcon.SaveChanges();
-                    Dbcon.Database.CommitTransaction();
+                    dbcon.SaveChanges();
+                    dbcon.Database.CommitTransaction();
                 }
-                catch(Exception ex){
-                    Dbcon.Database.RollbackTransaction();
-                    throw ex;
+                catch(Exception){
+                   dbcon.Database.RollbackTransaction(); 
+                   return Json("faild");
+                }
+            }
+            
+            //这里应该把重新封装json然后返回回去
+            return Json("successs");
+        }
+
+
+        [HttpPut("{id}")]
+        public IActionResult Put([FromBody]JObject  jsonObj)
+        {
+            dynamic Jsondm = jsonObj;
+
+            Project proEntity = Jsondm.proEntity.ToObject<Project>();
+
+            ProjectDepend[] proDepLst = Jsondm.proDepLst.ToObject<ProjectDepend[]>();
+
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                dbcon.Database.BeginTransaction();
+                try
+                {
+                    dbcon.Projects.Update(proEntity);
+                    //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
+                    string strDel = string.Format("delete from ProjectDepend where projectId ={0};", proEntity.projectId);
+                    dbcon.Database.ExecuteSqlCommand(strDel);
+
+                    if (proDepLst.Length > 0)
+                    {
+                        foreach (ProjectDepend ent in proDepLst)
+                        {
+                            ent.projectId = proEntity.projectId;
+                            dbcon.ProjectDepends.Add(ent);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    dbcon.Database.RollbackTransaction();
+                    return Json("faild");
+                }
+            }
+            return Json("successs");
+        }
+
+        [HttpDelete]
+        public IActionResult delete(Project proEntity)
+        {
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                dbcon.Database.BeginTransaction();
+                try
+                { 
+                    dbcon.Projects.Remove(proEntity);
+                    //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
+                    string strDel = string.Format("delete from ProjectDepend where projectId ={0};", proEntity.projectId);
+                    dbcon.Database.ExecuteSqlCommand(strDel);
+                }
+                catch (Exception)
+                {
+                    dbcon.Database.RollbackTransaction();
                 }
             }
             return Json("successs");
