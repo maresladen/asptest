@@ -10,9 +10,16 @@
     <!-- main page styles -->
     <link rel="stylesheet" href="~/css/page.css">
 
+
+<style>
+    .hljs{display:block;overflow-x:auto;padding:.5em;color:#abb2bf;background:#282c34}.hljs-comment,.hljs-quote{color:#5c6370;font-style:italic}.hljs-doctag,.hljs-formula,.hljs-keyword{color:#c678dd}.hljs-deletion,.hljs-name,.hljs-section,.hljs-selector-tag,.hljs-subst{color:#e06c75}.hljs-literal{color:#56b6c2}.hljs-addition,.hljs-attribute,.hljs-meta-string,.hljs-regexp,.hljs-string{color:#98c379}.hljs-built_in,.hljs-class .hljs-title{color:#e6c07b}.hljs-attr,.hljs-number,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-pseudo,.hljs-template-variable,.hljs-type,.hljs-variable{color:#d19a66}.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-symbol,.hljs-title{color:#61aeee}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}.hljs-link{text-decoration:underline}
+</style>
+
+
+
+
+
     <!-- this needs to be loaded before guide's inline scripts -->
-    <script async="" src="~/js/analytics.js"></script>
-    <script>window.PAGE_TYPE = "guide"</script>
 
 <div id="main" class="fix-sidebar">
     <div class="sidebar">
@@ -44,51 +51,31 @@
     <div class="content guide with-sidebar installation-guide">
 
 <!--页面展示-->
-
-<h3 id="-">文件上传功能</h3>
-<p>上传文件到文件服务器，文件服务器会返回地址给页面，然后进行后续的保存操作。</p>
-<hr>
-<h3 id="html-">html代码</h3>
-<table>
-    <tr>
-        <td  class="code">
-
-<pre><code class="lang-html">
-&lt;div class="col-sm-12"&gt;
-&lt;input type="button" class="btn btn-default btn-lg" value="上传照片"&gt; &lt;input id="cdzzjg" type="file" class="form-control "
-    style="position: absolute; top: 0; opacity: 0;" onchange="upPics('#cdzzjg','#cdupzzjg','#cdlblzzjg')"&gt;
-&lt;input type="text" id="cdupzzjg" name="organ" style="display:none"&gt;
-&lt;label id="cdlblzzjg"&gt;请上传组织机构代码&lt;/label&gt;
-&lt;/div&gt;
-</code></pre>
-
-        </td>
-    </tr>
-</table>
-<hr>
-<h3 id="js-">js代码</h3>
-<pre><code class="lang-javascript">
-
-function upPics(upContorl,imgControl,lblControl) {
-    var formData = new FormData();
-    formData.append('file', $(upContorl)[0].files[0]);
+<div class="preview"><h3>文件上传功能</h3><p>上传文件到文件服务器，文件服务器会返回地址给页面，然后进行后续的保存操作。</p><hr><h4>html代码段</h4><pre><code class="typescript hljs">
+&lt;div <span class="hljs-keyword">class</span>=<span class="hljs-string">"col-sm-12"</span>&gt;
+&lt;input <span class="hljs-keyword">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-keyword">class</span>=<span class="hljs-string">"btn btn-default btn-lg"</span> value=<span class="hljs-string">"上传照片"</span>&gt; &lt;input id=<span class="hljs-string">"cdzzjg"</span> <span class="hljs-keyword">type</span>=<span class="hljs-string">"file"</span> <span class="hljs-keyword">class</span>=<span class="hljs-string">"form-control "</span>
+    style=<span class="hljs-string">"position: absolute; top: 0; opacity: 0;"</span> onchange=<span class="hljs-string">"upPics('#cdzzjg','#cdupzzjg','#cdlblzzjg')"</span>&gt;
+&lt;input <span class="hljs-keyword">type</span>=<span class="hljs-string">"text"</span> id=<span class="hljs-string">"cdupzzjg"</span> name=<span class="hljs-string">"organ"</span> style=<span class="hljs-string">"display:none"</span>&gt;
+&lt;label id=<span class="hljs-string">"cdlblzzjg"</span>&gt;请上传组织机构代码&lt;<span class="hljs-regexp">/label&gt;
+&lt;/</span>div&gt;</code></pre><hr><h4>js代码段</h4><hr><pre><span class="cursor"></span><code class="typescript hljs"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">upPics</span>(<span class="hljs-params">upContorl,imgControl,lblControl</span>) </span>{
+    <span class="hljs-keyword">var</span> formData = <span class="hljs-keyword">new</span> FormData();
+    formData.append(<span class="hljs-string">'file'</span>, $(upContorl)[<span class="hljs-number">0</span>].files[<span class="hljs-number">0</span>]);
     $.ajax({
-        url : '${projectPath}photoUpdate/imguploadFile.json',
-        type : 'POST',
-        cache : false,
+        url : <span class="hljs-string">'${projectPath}photoUpdate/imguploadFile.json'</span>,
+        <span class="hljs-keyword">type</span> : <span class="hljs-string">'POST'</span>,
+        cache : <span class="hljs-literal">false</span>,
         data : formData, 
-        processData : false,
-        contentType : false
-    }).done(function(res) {
-        //TODO: 这里把图片放到form表单中的字段里面
-        console.log(res)
-        $(imgControl)[0].value=res.data
-        $(lblControl)[0].innerText ="上传成功"
-    }).fail(function(res) {
-        console.log('失败')
+        processData : <span class="hljs-literal">false</span>,
+        contentType : <span class="hljs-literal">false</span>
+    }).done(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>) </span>{
+        <span class="hljs-comment">//<span class="hljs-doctag">TODO:</span> 这里把图片放到form表单中的字段里面</span>
+        <span class="hljs-built_in">console</span>.log(res)
+        $(imgControl)[<span class="hljs-number">0</span>].value=res.data
+        $(lblControl)[<span class="hljs-number">0</span>].innerText =<span class="hljs-string">"上传成功"</span>
+    }).fail(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>) </span>{
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'失败'</span>)
     });
-}
-</code></pre>
+}</code></pre></div>
 
 
 <!--页面展示-->
@@ -100,3 +87,4 @@ function upPics(upContorl,imgControl,lblControl) {
 </div>
 
 <ript src="~/js/common.js"></script>
+<link rel="stylesheet" href="~/css/mdcss/editor.css">

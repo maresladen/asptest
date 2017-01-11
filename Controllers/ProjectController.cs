@@ -34,7 +34,8 @@ namespace WebApplication.Controllers
             this._signinManager =signinManager;
         }
 
-        public IActionResult Manage()
+        [HttpGet]
+        public IActionResult Manage(int id)
         {
             // if(string.IsNullOrEmpty(User.Identity.Name)){
             //      return RedirectToAction(nameof(HomeController.Index), "Home");
