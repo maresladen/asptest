@@ -11,11 +11,9 @@
         <link rel="stylesheet" href="~/css/font-awesome.css"/>
         <link rel="stylesheet" href="~/css/AdminLTE.css"/>
     </environment>
-    <environment names="Staging,Production">
-        <link rel="stylesheet" href="~/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+<environment names="Staging,Production">
+        <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
         <link rel="stylesheet" href="~/css/font-awesome.css"/>
         <link rel="stylesheet" href="~/css/AdminLTE.css"/>
     </environment>
@@ -24,9 +22,7 @@
         <script src="~/js/bootstrap.min.js"></script>
         <script src="~/js/vue.js"></script>
         <script src="~/js/vue-resource.js"></script>
-    @if (ViewData["ViewType"] != "mdEditor"){
         <script src="~/js/app.js"> </script>
-    }
 
 
 </head>
@@ -47,7 +43,7 @@
                     <li><a asp-controller="Home" asp-action="Index">主页</a></li>
                     <li><a asp-controller="Project">功能块管理</a></li>
                     <li><a asp-controller="Home" asp-action="Contact">权限分配</a></li>
-                    <li><a asp-controller="Home" asp-action="About">关于</a></li>
+                    <li><a asp-controller="MarkDown" asp-id="-1">关于</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>

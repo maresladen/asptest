@@ -19,7 +19,7 @@ namespace WebApplication.Controllers
     // 角色认证
     // [Authorize(Roles = "NormalUser")]
     // claim认证 需要在中间件注册时，增加此身份信息
-    [Route("Project")]
+    // [Route("Project")]
     [Authorize(Policy = "manager")]
     public class ProjectController : Controller
     {
@@ -34,33 +34,37 @@ namespace WebApplication.Controllers
             this._signinManager =signinManager;
         }
 
+#region 功能块获取
+
         [HttpGetAttribute]
         [RouteAttribute("/Project/{id?}")]
+        //就是一个注解
         public IActionResult Manage(int id)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption)){
-                // var query = from p in dbcon.Projects
-                //                 var query = from e in dbcon.Users
-                //             join ur in dbcon.UserRoles on e.Id equals ur.UserId
-                //             join r in dbcon.Roles on ur.RoleId equals r.Id
-                //             where e.Id == loginId
-                //             select new { e, r.Name };
-
-
-                //             //通过传入的页和请求条目量取数据
-                //             // dbcon.Users.Skip(1*10).Take(10);
-
-
-                // var result = await query.ToListAsync();
-
-                // var finRes = JsonConvert.SerializeObject(result, Formatting.None);
-                // ViewData["testData"] = finRes;
-                // return View(await dbcon.Employees.ToListAsync());
-                ViewData["proData"] = dbcon.Projects.ToListAsync();
+                // List<Project> prodata = dbcon.Projects.Include(p => p.projectDepends).ToList();
+                List<Project> prodata =new List<Project>();
+                if (id == 0)
+                {
+                    prodata = dbcon.Projects.ToList();
+                }
+                else
+                {
+                    prodata = dbcon.Projects.Where(p => p.projectId == id).ToList();
+                }
+                if (prodata.Count > 0)
+                {
+                    ViewData["proData"] = JsonConvert.SerializeObject(prodata);
+                }
+                //TODO: 权限设定
             }
             return View();
         }
+
+#endregion
         
+#region 功能块新增
+
         [HttpPost]
         [Route("/Project/{id}")]
         public IActionResult Post([FromBody]JObject  jsonObj)
@@ -96,7 +100,9 @@ namespace WebApplication.Controllers
             //这里应该把重新封装json然后返回回去
             return Json("successs");
         }
+#endregion
 
+#region 功能块修改
 
         [HttpPut]
         [Route("/Project/{id}")]
@@ -136,6 +142,10 @@ namespace WebApplication.Controllers
             return Json("successs");
         }
 
+#endregion
+
+#region 功能块删除
+
         [HttpDelete]
         [Route("/Project/{id}")]
         public IActionResult delete(Project proEntity)
@@ -158,8 +168,54 @@ namespace WebApplication.Controllers
             return Json("successs");
         }
 
+#endregion
 
-        #region API接口
+#region markDwon获取
+
+        [HttpGetAttribute]
+        [RouteAttribute("/MarkDown/{id}")]
+        //允许所有人可以访问
+        [AllowAnonymous]
+        //就是一个注解
+        public IActionResult MarkDown(int id)
+        {
+            //如果id为simple,忽略大小写,传入内容选择调用simple
+            //否则则通过id到数据库中查询,查询数据表为projectDepend表
+            Project proEntity = new Project();
+            if(id == -1){
+                ViewData["simple"] = "1";
+            }
+            else{
+                ViewData["simple"] = "0";
+                using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+                {
+                     proEntity = dbcon.Projects.Where(d => d.projectId == id).FirstOrDefault();
+                    // if (proEntity != null)
+                    // {
+                    //     // proEntity.projectMarkDown =string.Empty;
+                        
+                    //     ViewData["prodata"] = proEntity.projectMdText;
+                    // }
+                }
+            }
+           return View(proEntity);
+        }
+
+#endregion
+
+#region markDwon新增
+
+#endregion
+
+#region markDwon修改
+
+#endregion
+
+#region markDwon删除
+
+#endregion
+
+#region API接口,未开始
 
         [HttpGet]
         [RouteAttribute("/API/Project/{id?}")]
@@ -168,6 +224,6 @@ namespace WebApplication.Controllers
         }
 
 
-        #endregion
+#endregion
    }
 }

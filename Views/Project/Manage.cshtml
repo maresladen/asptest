@@ -3,68 +3,108 @@
     ViewData["ViewType"] = "mdEditor"; 
 }
 
-<script>
-//   $(function(){
 
-//  console.log('@ViewData["tempID"]');
-// })
-</script>
-
-
-<div class="box box-primary" style="padding-top: 6px;">
+<div id="probody" class="box box-primary" style="padding-top: 6px;">
             <div class="box-header ui-sortable-handle" style="cursor: move;">
               <i class="ion ion-clipboard"></i>
 
               <h3 class="box-title">功能块管理</h3>
 
-              <div class="box-tools pull-right">
-                <ul class="pagination pagination-sm inline">
-                  <li><a href="#">«</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">»</a></li>
-                </ul>
-              </div>
             </div>
             <!-- /.box-header -->
-            <div id="probody" class="box-body">
+            <div class="box-body">
               <ul class="todo-list ui-sortable">
-                <li>
+                <li v-for="item in proData">
                   <!-- drag handle -->
                       <span class="handle ui-sortable-handle">
                         <i class="fa fa-ellipsis-v"></i>
                         <i class="fa fa-ellipsis-v"></i>
                       </span>
                   <!-- todo text -->
-                  <span class="text">基于bootscrap的pc前端</span>
+                  <span class="text">{{item.projectName}}</span>
                   <!--<small class="label label-danger"><i class="fa  fa-user-plus"></i>顾锋</small>-->
                   <div class="tools">
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash-o"></i>
+                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.projectId)">&nbsp;</i>
+                    <i class="fa fa-edit" v-on:click="editPro(item)">&nbsp;</i>
+                    <i class="fa fa-trash-o" v-on:click="delPro(item)">&nbsp;</i>
                   </div>
                 </li>
               </ul>
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix no-border">
-              <button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Add item</button>
+              <button type="button" class="btn btn-default pull-right" v-on:click="addPro">
+                <i class="fa fa-plus"></i> Add item</button>
             </div>
           </div>
 
 
 
+<div class="modal fade" id="proManageModal" tabindex="-1" role="dialog" aria-labelledby="proManageModalLabel" aria-hidden="false">
+    <div class="modal-dialog" style="width: 100%">
+        <div class="modal-content">
+                <div class="close rotate">
+                    <span class="icon fa fa-close" onclick="$('#proManageModal').modal('hide')"></span>
+                </div>
+            <div class="alert bg-gray">
+                <h4><i class="icon fa fa-edit"></i>新增功能块 
+                </h4>
+            </div>
+            <div class="modal-body">
+ @Html.Partial("../Extends/projectModal.cshtml")
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--这里写一个通用的modal-->
+<!--以后的写法,写在layout里面,只做通知提醒用,其他的模板的内容需要写父子组件通信方法-->
+
 <script>
+
     var proVue = new Vue({
       el: "#probody",
       data: {
-        proData: JSON.parse('@Html.Raw(ViewData["proData"])')
+        proData: @Html.Raw(ViewData["proData"])
       },
-      method: {
+      methods: {
+          addPro : function(){
+            modalHerdV.proName ='';
+            $('#proManageModal').modal('show')
+            jsVue.jsData.splice(0,jsVue.jsData.length);
+            cssVue.cssData.splice(0,cssVue.cssData.length);
+          },
+          doMarkDown :function(id){
+            console.log(id);
+          },
+          delPro : function(item){
 
+            console.log(item);
+          },
+          editPro : function(item){
+
+            modalHerdV.proName = item.projectName;
+            jsVue.jsData.splice(0,jsVue.jsData.length);
+            cssVue.cssData.splice(0,cssVue.cssData.length);
+            for(var i in item.projectDepends){
+              var pd =item.projectDepends[i];
+              if(pd.fileType == 'javascript'){
+                jsVue.jsData.push({ name: pd.fileName, show: true });
+              }
+              else if(pd.fileType == 'css'){
+                cssVue.cssData.push({ name: pd.fileName, show: true });
+              }
+            }
+            $('#proManageModal').modal('show')
+          }
       },
       created: function () {
-        // this.$http.
+
       }
     })
+
 </script>

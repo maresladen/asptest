@@ -24,12 +24,16 @@ namespace WebApplication.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+             
             builder.Entity<Employee>().ToTable("Employees");
             builder.Entity<Project>().ToTable("Project");
             builder.Entity<ProjectDepend>().ToTable("ProjectDepend");
             builder.Entity<Features>().ToTable("Features");
             builder.Entity<FeaturesDepend>().ToTable("FeaturesDepend");
             builder.Entity<FeaIgnoreProDepend>().ToTable("FeaIgnoreProDepend");
+
+
+            // builder.Entity<Project>().HasMany(p => p.projectDepends).WithOne(l => l.project);
 
             base.OnModelCreating(builder);
             // Customize the ASP.NET Identity model and override the defaults if needed.

@@ -190,7 +190,7 @@ namespace WebApplication.Data.Migrations
                     b.Property<int>("freaturesDependId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("featuresId");
+                    b.Property<int>("featuresId").IsRequired();
 
                     b.Property<int>("projectDependid");
 
@@ -214,7 +214,7 @@ namespace WebApplication.Data.Migrations
 
                     b.Property<string>("featuresScript");
 
-                    b.Property<int>("projectId");
+                    b.Property<int>("projectId").IsRequired();
 
                     b.HasKey("featuresId");
 
@@ -226,7 +226,7 @@ namespace WebApplication.Data.Migrations
                     b.Property<int>("featuresDependsId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("featuresId");
+                    b.Property<int>("featuresId").IsRequired();
 
                     b.Property<string>("fileMarkdown");
 
@@ -250,6 +250,8 @@ namespace WebApplication.Data.Migrations
 
                     b.Property<string>("projectName");
 
+                    b.Property<string>("projectMdText");
+
                     b.HasKey("projectId");
 
                     b.ToTable("Project");
@@ -268,7 +270,7 @@ namespace WebApplication.Data.Migrations
 
                     b.Property<string>("fileType");
 
-                    b.Property<int>("projectId");
+                    b.Property<int>("projectId").IsRequired();
 
                     b.HasKey("dependId");
 

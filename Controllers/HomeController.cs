@@ -88,6 +88,10 @@ namespace WebApplication.Controllers
             }
         }
 
+        public IActionResult MdTest()
+        {
+            return View();
+        }
 
         public IActionResult Index()
         {

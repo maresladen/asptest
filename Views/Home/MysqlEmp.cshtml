@@ -237,7 +237,7 @@
                 </h4>
             </div>
             <div class="modal-body">
- @Html.Partial("../Project/Manage.cshtml")
+ @Html.Partial("../Extends/mdEditor.cshtml")
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭 </button>
@@ -264,9 +264,9 @@ var abc = new Vue({
 	el:'#mainTable',
 	data:{
 		//强类型数据，序列化
-		myData : JSON.parse('@Json.Serialize(Model)'),
+		myData : @Json.Serialize(Model),
 		//通过html解析json
-		testData :  JSON.parse('@Html.Raw(ViewData["testData"])'),
+		testData :  @Html.Raw(ViewData["testData"]),
 		msg:'',
 		type:''
 	},

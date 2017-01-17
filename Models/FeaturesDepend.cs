@@ -16,5 +16,7 @@ namespace WebApplication.Models
 		public string filePath { get; set; }
 		public string fileType { get; set; }
 		public string fileMarkdown { get; set; }
+
+		public virtual Features features {get;set;}
     }
 }

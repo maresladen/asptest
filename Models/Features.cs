@@ -17,5 +17,8 @@ namespace WebApplication.Models
 		public string featuresScript { get; set; }
 		public string featuresCss { get; set; }
 		public string featuresMardDown { get; set; }
+		public string featuresMdText { get; set; }
+
+		public virtual ICollection<FeaturesDepend> featuresDepends {get;set;}
     }
 }
