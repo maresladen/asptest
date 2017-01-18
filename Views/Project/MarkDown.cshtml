@@ -65,7 +65,7 @@ T3: 2014-01-02, 9d"></i>
           <i title="Preferences" class="fa fa-cog" data-remodal-target="preferences-modal"></i>
           <i title="Help" class="fa fa-question-circle" data-remodal-target="help-modal"></i>
           <i title="About" class="fa fa-info-circle" data-remodal-target="about-modal"></i>
-          <i title="Save" class="fa fa-save" data-remodal-target="about-modal"></i>
+          <i title="Save" class="fa fa-save" onclick="mdSave()"></i>
         </div>
       </div>
       <div class="ui-layout-center">
@@ -150,6 +150,11 @@ T3: 2014-01-02, 9d"></i>
           <p>Home page: <a href="http://tylingsoft.com/markdown-plus/" target="_blank">http://tylingsoft.com/markdown-plus/</a>.</p>
           <br/><a data-remodal-action="confirm" class="remodal-confirm">OK</a>
         </div>
+        <div class="remodal" data-remodal-id="save-modal"> <!-- about modal -->
+          <h2>Markdwon Plus</h2>
+          <p>保存成功.</p>
+          <br/><a data-remodal-action="confirm" class="remodal-confirm">OK</a>
+        </div>
       </div>
       <div class="ui-layout-east">
         <article class="markdown-body" id="preview"></article>
@@ -157,7 +162,6 @@ T3: 2014-01-02, 9d"></i>
       </div>
 
     </div>
-
 
  @if (ViewData["simple"] == "1"){
 
@@ -193,16 +197,52 @@ T3: 2014-01-02, 9d"></i>
     // }, 1000);
      });
 
-
-     function translatenbsp(){
-        var a = '@Model.projectMdText'
-        var c = document.createElement('div');
-        c.innerHTML = a;
-        a = c.innerText || c.textContent;
-        c = null;
-        return a;
-     }
-
     </script>
  }
+
+
+<script>
+     function translatenbsp() {
+       var a = '@Model.projectMdText'
+       var c = document.createElement('div');
+       c.innerHTML = a;
+       a = c.innerText || c.textContent;
+       c = null;
+       return a;
+     }
+
+
+     function mdSave() {
+
+       var tempProjectId = '@Model.projectId';
+      // //  proEntity.projectMdText = editor.getValue();
+      //  proEntity.projectMdText = editor.getValue();
+      // //  proEntity.projectMarkDown = $('#preview').html();
+      //  proEntity.projectMarkDown ='';
+
+
+       var tempForm =new FormData();
+
+       tempForm.append('projectId','@Model.projectId');
+       tempForm.append('projectMdText',editor.getValue());
+       tempForm.append('projectMarkDown',$('#preview').html());
+
+        $.ajax({
+          url: '/MarkDown/' +tempProjectId,
+          type: 'put',
+          data: tempForm,
+          contentType: false,
+          processData: false,
+          success:function(data){
+            $('[data-remodal-id=save-modal]').remodal().open()
+            console.log(data);
+          }
+        });
+        
+     }
+
+
+
+
+ </script>
 

@@ -46,17 +46,19 @@ namespace WebApplication.Controllers
                 List<Project> prodata =new List<Project>();
                 if (id == 0)
                 {
-                    prodata = dbcon.Projects.ToList();
+                    prodata = dbcon.Projects.Include(p => p.projectDepends).ToList();
                 }
                 else
                 {
-                    prodata = dbcon.Projects.Where(p => p.projectId == id).ToList();
+                    prodata = dbcon.Projects.Where(p => p.projectId == id).Include(p => p.projectDepends).ToList();
                 }
                 if (prodata.Count > 0)
                 {
                     ViewData["proData"] = JsonConvert.SerializeObject(prodata);
                 }
-                //TODO: 权限设定
+                else{
+                    ViewData["proData"]  ="{}";
+                }
             }
             return View();
         }
@@ -66,7 +68,7 @@ namespace WebApplication.Controllers
 #region 功能块新增
 
         [HttpPost]
-        [Route("/Project/{id}")]
+        [Route("/Project/{jsonObj?}")]
         public IActionResult Post([FromBody]JObject  jsonObj)
         {
             dynamic Jsondm = jsonObj;
@@ -105,7 +107,7 @@ namespace WebApplication.Controllers
 #region 功能块修改
 
         [HttpPut]
-        [Route("/Project/{id}")]
+        [Route("/Project/{jsonObj?}")]
         public IActionResult Put([FromBody]JObject  jsonObj)
         {
             dynamic Jsondm = jsonObj;
@@ -116,10 +118,13 @@ namespace WebApplication.Controllers
 
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
-                dbcon.Database.BeginTransaction();
                 try
                 {
-                    dbcon.Projects.Update(proEntity);
+                    dbcon.Projects.Attach(proEntity);
+                    dbcon.Entry(proEntity).State = EntityState.Modified;
+                    dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = false;
+                    dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = false;
+
                     //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
                     string strDel = string.Format("delete from ProjectDepend where projectId ={0};", proEntity.projectId);
                     dbcon.Database.ExecuteSqlCommand(strDel);
@@ -132,10 +137,10 @@ namespace WebApplication.Controllers
                             dbcon.ProjectDepends.Add(ent);
                         }
                     }
+                    dbcon.SaveChanges();
                 }
                 catch (Exception)
                 {
-                    dbcon.Database.RollbackTransaction();
                     return Json("faild");
                 }
             }
@@ -148,21 +153,23 @@ namespace WebApplication.Controllers
 
         [HttpDelete]
         [Route("/Project/{id}")]
-        public IActionResult delete(Project proEntity)
+        public IActionResult delete(int id)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
-                dbcon.Database.BeginTransaction();
                 try
                 { 
+                    Project proEntity = new Project();
+                    proEntity.projectId = id;
                     dbcon.Projects.Remove(proEntity);
                     //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
                     string strDel = string.Format("delete from ProjectDepend where projectId ={0};", proEntity.projectId);
                     dbcon.Database.ExecuteSqlCommand(strDel);
+                    dbcon.SaveChanges();
                 }
                 catch (Exception)
                 {
-                    dbcon.Database.RollbackTransaction();
+                    return Json("faild");
                 }
             }
             return Json("successs");
@@ -203,17 +210,40 @@ namespace WebApplication.Controllers
 
 #endregion
 
-#region markDwon新增
-
-#endregion
-
 #region markDwon修改
 
+
+        [HttpPut]
+        [Route("/MarkDown/{id?}")]
+        public IActionResult MdPut(int id)
+        {
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                try
+                {
+                    var tempForm = Request.Form;
+
+                    Project proEntity =  new Project();
+                    proEntity.projectId = id;
+                    proEntity.projectMdText = tempForm["projectMdText"];
+                    proEntity.projectMarkDown = tempForm["projectMarkDown"];
+                    dbcon.Projects.Attach(proEntity);
+                    dbcon.Entry(proEntity).State = EntityState.Unchanged;
+                    dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
+                    dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
+                    dbcon.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    return Json("faild");
+                }
+            }
+            return Json("successs");
+        }
+
+
 #endregion
 
-#region markDwon删除
-
-#endregion
 
 #region API接口,未开始
 

@@ -33,7 +33,7 @@ namespace WebApplication.Data
             builder.Entity<FeaIgnoreProDepend>().ToTable("FeaIgnoreProDepend");
 
 
-            // builder.Entity<Project>().HasMany(p => p.projectDepends).WithOne(l => l.project);
+            builder.Entity<Project>().HasMany(p => p.projectDepends).WithOne(l => l.project);
 
             base.OnModelCreating(builder);
             // Customize the ASP.NET Identity model and override the defaults if needed.

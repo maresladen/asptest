@@ -34,7 +34,7 @@ th,td{
                 {{msgContent}}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭 </button>
+                <button type="button" class="btn btn-default" onclick="$('#myModal').modal('hide')">关闭 </button>
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@ th,td{
 
 <div id="headControl" class="col-md-12" style="padding-bottom: 20px">
 <div class="input-group">
-    <input id="projectName" type="text" v-model ="proName" name="message" placeholder="功能块名称" class="form-control"/>
+    <input id="projectName" type="text" v-model ="proEntity.projectName" name="message" placeholder="功能块名称" class="form-control"/>
     <span class="input-group-btn">
         <button v-on:click="saveProject" class="btn btn-Default btn-flat">保存</button>
     </span>
@@ -153,13 +153,13 @@ th,td{
 
                 //检测是否是拖拽文件到页面的操作
                 if (fileList.length == 0) {
-                    return false;
+                    return;
                 }
                 //检测文件是不是css和js
                 if (fileList[i].type.indexOf('javascript') === -1) {
                     console.log(fileList[i].type);
                     modalmodalV.alert("警告！", "仅允许上传js文件!");
-                     false;
+                    return;
                 }
 
                 //拖拉文件到浏览器
@@ -167,7 +167,7 @@ th,td{
                 var filesize = Math.floor((fileList[i].size) / 10240);
                 if (filesize > 10240) {
                     modalmodalV.alert("警告！", "单个文件大小不允许超过10兆!");
-                    return false;
+                    return;
                 }
                 else {
                     var noAppend =true;
@@ -184,6 +184,7 @@ th,td{
                     if(noAppend){
                         var jsfile = { name: filename, show: true };
                         jsVue.jsData.push(jsfile)
+                        // TODO:  增加文件服务器的上传
                     }
                 }
             }
@@ -198,13 +199,13 @@ th,td{
 
                 //检测是否是拖拽文件到页面的操作
                 if (fileList.length == 0) {
-                    return false;
+                    return;
                 }
                 //检测文件是不是css和js
                 if (fileList[i].type.indexOf('css') === -1) {
                     console.log(fileList[i].type);
                     modalmodalV.alert(modalmodalV.msgTypeEnmu.warn, "仅允许上传css文件！");
-                    return false;
+                    return;
                 }
 
                 //拖拉文件到浏览器
@@ -213,7 +214,7 @@ th,td{
                 var filesize = Math.floor((fileList[i].size) / 10240);
                 if (filesize > 10240) {
                     modalmodalV.alert(modalmodalV.msgTypeEnmu.warn, "单个文件大小不允许超过10兆!");
-                    return false;
+                    return;
                 }
                 else {
                     var noAppend =true;
@@ -230,6 +231,7 @@ th,td{
                     if (noAppend) {
                         var cssfile = { name: filename, show: true };
                         cssVue.cssData.push(cssfile)
+                        // TODO:  增加文件服务器的上传
                     }
                 }
             }
@@ -304,7 +306,7 @@ th,td{
     var modalHerdV = new Vue({
         el: '#headControl',
         data: {
-            proName: '',
+            proEntity: {projectId : 0, projectName: ''},
             msgType: '警告',
             msgContent: "测试"
         },
@@ -313,10 +315,10 @@ th,td{
             //     $('#myModal').modal('show');
             // },
             saveProject: function () {
-                var proEntity = {};
-                proEntity.projectName =this.proName;
+                // var proEntity = {};
+                // proEntity.projectName =this.proEntity.proName;
                 // proEntity.projectId =2;
-                proEntity.projectMarkDown = $('#wmd-preview').html();
+                // proEntity.projectMarkDown = $('#wmd-preview').html();
                 var depList = [];
 
                 for(var i =0;i<jsVue.jsData.length;i++){
@@ -330,22 +332,26 @@ th,td{
                     }
                 }
 
-                // var subData = JSON.stringify({
-                //     proEntity:proEntity,
-                //     proDepLst:depList
-                // })
 
                 var subData ={};
-                subData.proEntity = proEntity;
+                subData.proEntity = this.proEntity;
                 subData.proDepLst = depList;
 
+                if(this.proEntity.projectId == 0){
+                    this.$http.post('/Project', JSON.stringify(subData), { emulateJSON: true }).then(response => {
+                        console.log(response.data)
+                    }, rep => {
+                        console.log('失败')
+                    });
+                }
+                else{
+                    this.$http.put('/Project', JSON.stringify(subData), { emulateJSON: true }).then(response => {
+                        console.log(response.data)
+                    }, rep => {
+                        console.log('失败')
+                    });
+                }
 
-
-                this.$http.post('/Project/ProSave',JSON.stringify(subData),{ emulateJSON: true}).then(response => {
-	 				console.log(response.data)
-            },rep=>{
-	 				console.log('失败')
-            });
             }
         }
     })

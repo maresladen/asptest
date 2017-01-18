@@ -34,8 +34,14 @@
             <!-- /.box-body -->
             <div class="box-footer clearfix no-border">
               <button type="button" class="btn btn-default pull-right" v-on:click="addPro">
-                <i class="fa fa-plus"></i> Add item</button>
+                <i class="fa fa-plus"></i> 新增功能块</button>
+              <button type="button" class="btn btn-default pull-right" v-on:click="dotest">
+                <i class="fa fa-plus"></i> 我来做个测试</button>
             </div>
+          </div>
+
+          <div id="testdiv" v-html ="testData">
+hehe
           </div>
 
 
@@ -54,7 +60,7 @@
  @Html.Partial("../Extends/projectModal.cshtml")
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭 </button>
+                <button type="button" class="btn btn-default" onclick="$('#proManageModal').modal('hide')">关闭 </button>
             </div>
         </div>
     </div>
@@ -79,15 +85,21 @@
             cssVue.cssData.splice(0,cssVue.cssData.length);
           },
           doMarkDown :function(id){
-            console.log(id);
+            // console.log(id);
+            window.location.href = "/MarkDown/" + id;
+
           },
           delPro : function(item){
-
-            console.log(item);
+            //TODO:  这里要加删除的询问
+            this.$http.delete('/Project/'+item.projectId).then(response => {
+              console.log(response.data)
+            }, rep => {
+              console.log('失败')
+            });
           },
           editPro : function(item){
 
-            modalHerdV.proName = item.projectName;
+            modalHerdV.proEntity = {projectId : item.projectId, projectName: item.projectName};
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
             for(var i in item.projectDepends){
@@ -100,10 +112,21 @@
               }
             }
             $('#proManageModal').modal('show')
+          },
+          dotest :function(){
+            testV.testData = this.proData[1].projectMarkDown;
           }
       },
       created: function () {
+       }
+    })
+    
 
+    var testV =new Vue({
+
+      el:"#testdiv",
+      data :{
+        testData :''
       }
     })
 
