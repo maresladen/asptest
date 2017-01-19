@@ -8,9 +8,10 @@ using WebApplication.Data;
 namespace WebApplication.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170119010501_MyMigration2017")]
+    partial class MyMigration2017
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
@@ -208,9 +209,9 @@ namespace WebApplication.Data.Migrations
 
                     b.Property<string>("featuresHtml");
 
-                    b.Property<string>("featuresMardDown");
+                    b.Property<string>("featuresMardDown").HasColumnType("mediumtext");
 
-                    b.Property<string>("featuresMdText");
+                    b.Property<string>("featuresMdText").HasColumnType("text");
 
                     b.Property<string>("featuresName");
 
@@ -250,9 +251,9 @@ namespace WebApplication.Data.Migrations
                     b.Property<int>("projectId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("projectMarkDown");
+                    b.Property<string>("projectMarkDown").HasColumnType("mediumtext");
 
-                    b.Property<string>("projectMdText");
+                    b.Property<string>("projectMdText").HasColumnType("text");
 
                     b.Property<string>("projectName");
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,7 +17,9 @@ namespace WebApplication.Models
 		public string featuresHtml { get; set; }
 		public string featuresScript { get; set; }
 		public string featuresCss { get; set; }
+		[Column(TypeName="mediumtext")]
 		public string featuresMardDown { get; set; }
+		[Column(TypeName="text")]
 		public string featuresMdText { get; set; }
 
 		public virtual ICollection<FeaturesDepend> featuresDepends {get;set;}

@@ -226,16 +226,17 @@ namespace WebApplication.Controllers
                     Project proEntity =  new Project();
                     proEntity.projectId = id;
                     proEntity.projectMdText = tempForm["projectMdText"];
-                    proEntity.projectMarkDown = tempForm["projectMarkDown"];
+                    proEntity.projectMarkDown =  tempForm["projectMarkDown"];
+
                     dbcon.Projects.Attach(proEntity);
                     dbcon.Entry(proEntity).State = EntityState.Unchanged;
                     dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
                     dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
                     dbcon.SaveChanges();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return Json("faild");
+                    throw ex;
                 }
             }
             return Json("successs");
