@@ -181,9 +181,6 @@ namespace WebApplication.Controllers
 
         [HttpGetAttribute]
         [RouteAttribute("/MarkDown/{id}")]
-        //允许所有人可以访问
-        [AllowAnonymous]
-        //就是一个注解
         public IActionResult MarkDown(int id)
         {
             //如果id为simple,忽略大小写,传入内容选择调用simple
@@ -214,7 +211,7 @@ namespace WebApplication.Controllers
 
 
         [HttpPut]
-        [Route("/MarkDown/{id?}")]
+        [Route("/MarkDownTest/{id?}")]
         public IActionResult MdPut(int id)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
@@ -241,6 +238,36 @@ namespace WebApplication.Controllers
             }
             return Json("successs");
         }
+
+                [HttpPut]
+        [Route("/MarkDown/{proEntity?}")]
+        public IActionResult MdPutTest(Project proEntity)
+        {
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                try
+                {
+                    // var tempForm = Request.Form;
+
+                    // Project proEntity =  new Project();
+                    // proEntity.projectId = id;
+                    // proEntity.projectMdText = tempForm["projectMdText"];
+                    // proEntity.projectMarkDown =  tempForm["projectMarkDown"];
+
+                    dbcon.Projects.Attach(proEntity);
+                    dbcon.Entry(proEntity).State = EntityState.Unchanged;
+                    dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
+                    dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
+                    dbcon.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            return Json("successs");
+        }
+
 
 
 #endregion

@@ -214,30 +214,40 @@ T3: 2014-01-02, 9d"></i>
 
      function mdSave() {
 
-       var tempProjectId = '@Model.projectId';
-      // //  proEntity.projectMdText = editor.getValue();
-      //  proEntity.projectMdText = editor.getValue();
-      // //  proEntity.projectMarkDown = $('#preview').html();
-      //  proEntity.projectMarkDown ='';
+    //    var tempProjectId = '@Model.projectId';
+    //    var tempForm =new FormData();
+
+    //    tempForm.append('projectId','@Model.projectId');
+    //    tempForm.append('projectMdText',editor.getValue());
+    //    tempForm.append('projectMarkDown',$('#preview').html());
+
+           // $.ajax({
+        //   url: '/MarkDown/' +tempProjectId,
+        //   type: 'put',
+        //   data: tempForm,
+        //   contentType: false,
+        //   processData: false,
+        //   success:function(data){
+        //     $('[data-remodal-id=save-modal]').remodal().open()
+        //     console.log(data);
+        //   }
+        // }); 
 
 
-       var tempForm =new FormData();
-
-       tempForm.append('projectId','@Model.projectId');
-       tempForm.append('projectMdText',editor.getValue());
-       tempForm.append('projectMarkDown',$('#preview').html());
-
+       var proEntity ={}
+       proEntity.projectId = '@Model.projectId';
+       proEntity.projectMdText = editor.getValue();
+       proEntity.projectMarkDown =$('#preview').html(); 
         $.ajax({
-          url: '/MarkDown/' +tempProjectId,
+          url: '/MarkDown',
           type: 'put',
-          data: tempForm,
-          contentType: false,
-          processData: false,
+          data: proEntity,
           success:function(data){
             $('[data-remodal-id=save-modal]').remodal().open()
             console.log(data);
           }
         });
+
         
      }
 

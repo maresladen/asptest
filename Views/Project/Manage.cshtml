@@ -3,6 +3,8 @@
     ViewData["ViewType"] = "mdEditor"; 
 }
 
+    <link rel="stylesheet" href="~/css/markdown-plus.min.css"/>
+    <script src="~/js/dist/Chart.min.js" charset="utf-8"></script>
 
 <div id="probody" class="box box-primary" style="padding-top: 6px;">
             <div class="box-header ui-sortable-handle" style="cursor: move;">
@@ -24,9 +26,10 @@
                   <span class="text">{{item.projectName}}</span>
                   <!--<small class="label label-danger"><i class="fa  fa-user-plus"></i>顾锋</small>-->
                   <div class="tools">
-                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.projectId)">&nbsp;</i>
-                    <i class="fa fa-edit" v-on:click="editPro(item)">&nbsp;</i>
-                    <i class="fa fa-trash-o" v-on:click="delPro(item)">&nbsp;</i>
+                    <i class="fa fa-plus-circle">功能点</i>
+                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.projectId)">MD</i>
+                    <i class="fa fa-edit" v-on:click="editPro(item)">编辑</i>
+                    <i class="fa fa-trash-o" v-on:click="delPro(item)">删除</i>
                   </div>
                 </li>
               </ul>
@@ -40,7 +43,7 @@
             </div>
           </div>
 
-          <div id="testdiv" v-html ="testData">
+          <div id="testdiv" style="margin: 0 15%" v-html ="testData">
 hehe
           </div>
 
@@ -114,7 +117,9 @@ hehe
             $('#proManageModal').modal('show')
           },
           dotest :function(){
-            testV.testData = this.proData[1].projectMarkDown;
+            testV.bindHTML(this.proData[0].projectMarkDown);
+
+              
           }
       },
       created: function () {
@@ -127,7 +132,25 @@ hehe
       el:"#testdiv",
       data :{
         testData :''
+      },
+      methods:{
+        bindHTML : function(htmlData){
+          this.testData =htmlData;
+            this.$nextTick(function(){
+              $(".chartjs").each(function () {
+                try {
+                    new Chart($(this), JSON.parse($(this).text()))
+                }
+                catch (e) {
+                  $(this).replaceWith('<pre>Chart.js complains: "' + e + '"</pre>')
+                }
+             
+              });
+            })
+            
+        }
       }
+
     })
 
 </script>
