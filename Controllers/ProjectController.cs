@@ -254,7 +254,9 @@ namespace WebApplication.Controllers
                     // proEntity.projectMdText = tempForm["projectMdText"];
                     // proEntity.projectMarkDown =  tempForm["projectMarkDown"];
 
+                    proEntity.projectMdText = proEntity.projectMdText.Replace(@"\","|BETAFUN|");
                     dbcon.Projects.Attach(proEntity);
+
                     dbcon.Entry(proEntity).State = EntityState.Unchanged;
                     dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
                     dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
