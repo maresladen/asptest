@@ -51,51 +51,52 @@ th,td{
 </div>
 </div>
 <div id="jsDiv" class="col-md-6">
-    <div class="box box-default box-solid">
+    <div class="box box-default box-solid collapsed-box">
         <div class="box-header with-border" v-bind:style="headStyle">
             <h3 class="box-title">js依赖</h3>
-
             <div class="box-tools pull-center">(js文件拖放到这里)
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa " v-bind:class="{'fa-plus':isplus,'fa-minus':!isplus}"></i>
                 </button>
             </div>
         </div>
-        <div v-for="item in jsData">
-
-<transition name="slide-fade">
-        <div class="box-body" v-show="item.show" v-bind:style="bodyStyle">
-    {{item.name}}
-<div class="box-tools pull-right">
-    <button v-on:click="item.show = !item.show">
+        <div class="box-body" style="padding: 0px 10px">
+            <div v-for="item in jsData">
+                <transition name="slide-fade">
+                    <div v-show="item.show" v-bind:style="bodyStyle">
+                        {{item.name}}
+                        <div class="box-tools pull-right">
+                            <button v-on:click="item.show = !item.show">
                         <i class="fa fa-fw fa-remove"></i>
                     </button>
-</div>
-</div>
-</transition>
+                        </div>
+                    </div>
+                </transition>
+            </div>
         </div>
-</div>
+    </div>
 </div>
 <div id="cssDiv" class="col-md-6">
-    <div class="box box-default box-solid">
+    <div class="box box-default box-solid collapsed-box">
         <div class="box-header with-border" v-bind:style="headStyle">
             <h3 class="box-title">css文件</h3>
-
             <div class="box-tools pull-right">(css文件拖放到这里)
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa" v-bind:class="{'fa-plus':isplus,'fa-minus':!isplus}"></i>
                 </button>
             </div>
         </div>
-        <div v-for="item in cssData" >
-<transition name="slide-fade">
-        <div class="box-body" v-show="item.show"  v-bind:style="bodyStyle">
-    {{item.name}}
-<div class="box-tools pull-right">
-    <button v-on:click="item.show = !item.show"><i class="fa fa-fw fa-remove"></i></button>
-</div>
+        <div class="box-body" style="padding: 0px 10px">
+            <div v-for="item in cssData">
+                <transition name="slide-fade">
+                    <div v-show="item.show" v-bind:style="bodyStyle">
+                        {{item.name}}
+                        <div class="box-tools pull-right">
+                            <button v-on:click="item.show = !item.show"><i class="fa fa-fw fa-remove"></i></button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
         </div>
-</transition>
-</div>
-</div>
+    </div>
 </div>
 
 <script>
@@ -247,7 +248,13 @@ th,td{
                 background:'#d2d6de'
             },
             bodyStyle : {
-                background:'white'
+                background:'white',
+                'border-top-left-radius': 0,
+                'border-top-right-radius': 0,
+                'border-bottom-right-radius': '3px',
+                'border-bottom-left-radius': '3px',
+                'padding-top': '10px',
+                'padding-bottom': '10px'
             }
         },
         created: function () {
@@ -266,7 +273,13 @@ th,td{
                 background:'#d2d6de'
             },
             bodyStyle : {
-                background:'white'
+                background:'white',
+                'border-top-left-radius': 0,
+                'border-top-right-radius': 0,
+                'border-bottom-right-radius': '3px',
+                'border-bottom-left-radius': '3px',
+                'padding-top': '10px',
+                'padding-bottom': '10px'
             }
 
         },
@@ -306,7 +319,7 @@ th,td{
     var modalHerdV = new Vue({
         el: '#headControl',
         data: {
-            featureEntity: {featuresId : 0, featuresName: ''},
+            featureEntity: {featuresId : 0, featuresName: '',projectId:0},
             msgType: '警告',
             msgContent: "测试"
         },
@@ -327,7 +340,7 @@ th,td{
 
 
                 var subData ={};
-                subData.featureEntity = this.featureEntity;
+                subData.FeatureEntity = this.featureEntity;
                 subData.FeatureDepLst = depList;
 
                 if(this.featureEntity.featuresId == 0){

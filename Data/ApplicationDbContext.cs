@@ -21,6 +21,7 @@ namespace WebApplication.Data
         public DbSet<Features> Features{get;set;}
         public DbSet<FeaturesDepend> FeaturesDepends{get;set;}
         public DbSet<FeaIgnoreProDepend> FeaIgnoreProDepends{get;set;}
+        public DbSet<MarkDown> MarkDowns{get;set;}
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -31,6 +32,7 @@ namespace WebApplication.Data
             builder.Entity<Features>().ToTable("Features");
             builder.Entity<FeaturesDepend>().ToTable("FeaturesDepend");
             builder.Entity<FeaIgnoreProDepend>().ToTable("FeaIgnoreProDepend");
+            builder.Entity<MarkDown>().ToTable("MarkDown");
 
 
             // builder.Entity<Project>().HasMany(p => p.projectDepends).WithOne(l => l.project);

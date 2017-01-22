@@ -81,12 +81,14 @@ hehe
       },
       methods: {
           addPro : function(){
+            modalHerdV.proEntity = {projectId : 0, projectName: ''};
             $('#proManageModal').modal('show')
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
           },
           doMarkDown :function(id){
             // console.log(id);
+            //TODO : 是否确认要删除
             window.location.href = "/MarkDown/" + id;
 
           },

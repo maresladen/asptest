@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace WebApplication.Models
 {
@@ -17,6 +18,8 @@ namespace WebApplication.Models
 		public string fileType { get; set; }
 		public string fileMarkdown { get; set; }
 
+		//忽略循环引用
+		[JsonIgnore]
 		public virtual Features features {get;set;}
     }
 }

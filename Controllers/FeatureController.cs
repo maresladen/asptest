@@ -50,9 +50,11 @@ namespace WebApplication.Controllers
                 if (data.Count == 0)
                 {
                     ViewData["FeatureData"] = "{}";
+                    ViewData["ProjectId"] = projectId;
                 }
                 else{
                     ViewData["FeatureData"] = JsonConvert.SerializeObject(data);
+                    ViewData["ProjectId"] = projectId;
                 }
             }
             return View();
@@ -175,7 +177,7 @@ namespace WebApplication.Controllers
 
         [HttpGetAttribute]
         [RouteAttribute("/FMarkDown/{id}")]
-        public IActionResult MarkDown(int id)
+        public IActionResult FMarkDown(int id)
         {
             //如果id为simple,忽略大小写,传入内容选择调用simple
             //否则则通过id到数据库中查询,查询数据表为projectDepend表

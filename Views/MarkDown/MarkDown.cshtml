@@ -1,7 +1,6 @@
 @{
     Layout =null;
 }
- @model WebApplication.Models.Features
 
     <link rel="stylesheet" href="~/css/markdown-plus.min.css"/>
     <script src="~/js/dist/markdown-plus.min.js" charset="utf-8"></script>
@@ -203,7 +202,7 @@ T3: 2014-01-02, 9d"></i>
 
 <script>
      function translatenbsp() {
-       var a = '@Model.featuresMdText'
+       var a = '@DataView["mdText"]'
        var c = document.createElement('div');
        c.innerHTML = a;
        a = c.innerText || c.textContent;
@@ -215,10 +214,10 @@ T3: 2014-01-02, 9d"></i>
 
      function mdSave() {
 
-       var featureEntity ={}
-       featureEntity.featuresId = '@Model.featuresId';
-       featureEntity.featuresMdText = editor.getValue();
-       featureEntity.featuresMardDown =$('#preview').html(); 
+       var mdEntity ={}
+       mdEntity.id = '';
+       mdEntity.MdText = editor.getValue();
+       mdEntity.MardDown =$('#preview').html(); 
         $.ajax({
           url: '/FMarkDown',
           type: 'put',

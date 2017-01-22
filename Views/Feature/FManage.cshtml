@@ -70,6 +70,7 @@
       },
       methods: {
           addItem : function(){
+            modalHerdV.featureEntity = {featuresId : 0, featuresName: '' ,projectId :'@ViewData["ProjectId"]'};
             $('#featureModal').modal('show')
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
@@ -89,7 +90,7 @@
           },
           editItem : function(item){
 
-            modalHerdV.featureEntity = {featuresId : item.featuresId, featuresName: item.featuresName};
+            modalHerdV.featureEntity = {featuresId : item.featuresId, featuresName: item.featuresName ,projectId : item.projectId};
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
             for(var i in item.featuresDepends){
@@ -114,30 +115,30 @@
     })
     
 
-    var testV =new Vue({
+    // var testV =new Vue({
 
-      el:"#testdiv",
-      data :{
-        testData :''
-      },
-      methods:{
-        bindHTML : function(htmlData){
-          this.testData =htmlData;
-            this.$nextTick(function(){
-              $(".chartjs").each(function () {
-                try {
-                    new Chart($(this), JSON.parse($(this).text()))
-                }
-                catch (e) {
-                  $(this).replaceWith('<pre>Chart.js complains: "' + e + '"</pre>')
-                }
+    //   el:"#testdiv",
+    //   data :{
+    //     testData :''
+    //   },
+    //   methods:{
+    //     bindHTML : function(htmlData){
+    //       this.testData =htmlData;
+    //         this.$nextTick(function(){
+    //           $(".chartjs").each(function () {
+    //             try {
+    //                 new Chart($(this), JSON.parse($(this).text()))
+    //             }
+    //             catch (e) {
+    //               $(this).replaceWith('<pre>Chart.js complains: "' + e + '"</pre>')
+    //             }
              
-              });
-            })
+    //           });
+    //         })
             
-        }
-      }
+    //     }
+    //   }
 
-    })
+    // })
 
 </script>
