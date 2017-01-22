@@ -70,15 +70,15 @@ namespace WebApplication.Data
 
                 entity.Property(e => e.featuresCss)
                     .HasColumnName("featuresCss")
-                    .HasColumnType("varchar(255)");
+                    .HasColumnType("varchar(6000)");
 
                 entity.Property(e => e.featuresHtml)
                     .HasColumnName("featuresHtml")
-                    .HasColumnType("varchar(255)");
+                    .HasColumnType("varchar(6000)");
 
                 entity.Property(e => e.featuresMardDown)
                     .HasColumnName("featuresMardDown")
-                    .HasColumnType("varchar(255)");
+                    .HasColumnType("varchar(mediumtext)");
 
                 entity.Property(e => e.featuresMdText)
                     .HasColumnName("featuresMdText")
@@ -86,11 +86,11 @@ namespace WebApplication.Data
 
                 entity.Property(e => e.featuresName)
                     .HasColumnName("featuresName")
-                    .HasColumnType("varchar(255)");
+                    .HasColumnType("varchar(text)");
 
                 entity.Property(e => e.featuresScript)
                     .HasColumnName("featuresScript")
-                    .HasColumnType("varchar(255)");
+                    .HasColumnType("varchar(6000)");
 
 
                 entity.Property(e => e.projectId)

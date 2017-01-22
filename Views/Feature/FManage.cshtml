@@ -1,68 +1,57 @@
 @{ 
-    ViewData["Title"] = "项目管理"; 
+    ViewData["Title"] = "功能点"; 
 }
 
-    <link rel="stylesheet" href="~/css/md-display.css"/>
-    <script src="~/js/dist/Chart.min.js" charset="utf-8"></script>
-
-<div id="probody" class="box box-primary" style="padding-top: 6px;">
+<div id="featurebody" class="box box-primary" style="padding-top: 6px;">
             <div class="box-header ui-sortable-handle" style="cursor: move; margin-top: 40px">
               <i class="ion ion-clipboard"></i>
 
-              <h3 class="box-title">功能块管理</h3>
+              <h3 class="box-title">功能点管理</h3>
 
             </div>
             <!-- /.box-header -->
             <div class="box-body">
               <ul class="todo-list ui-sortable">
-                <li v-for="item in proData">
+                <li v-for="item in ItemData">
                   <!-- drag handle -->
                       <span class="handle ui-sortable-handle">
                         <i class="fa fa-ellipsis-v"></i>
                         <i class="fa fa-ellipsis-v"></i>
                       </span>
                   <!-- todo text -->
-                  <span class="text">{{item.projectName}}</span>
+                  <span class="text">{{item.featuresName}}</span>
                   <!--<small class="label label-danger"><i class="fa  fa-user-plus"></i>顾锋</small>-->
                   <div class="tools">
-                    <i class="fa fa-cogs" v-on:click="featuresEdit(item.projectId)">功能点</i>
-                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.projectId)">MD</i>
-                    <i class="fa fa-edit" v-on:click="editPro(item)">编辑</i>
-                    <i class="fa fa-trash-o" v-on:click="delPro(item)">删除</i>
+                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.featuresId)">MD</i>
+                    <i class="fa fa-edit" v-on:click="editItem(item)">编辑</i>
+                    <i class="fa fa-trash-o" v-on:click="delItem(item)">删除</i>
                   </div>
                 </li>
               </ul>
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix no-border">
-              <button type="button" class="btn btn-default pull-right" v-on:click="addPro">
-                <i class="fa fa-plus"></i> 新增功能块</button>
-              <button type="button" class="btn btn-default pull-right" v-on:click="dotest">
-                <i class="fa fa-plus"></i> 我来做个测试</button>
+              <button type="button" class="btn btn-default pull-right" v-on:click="addItem">
+                <i class="fa fa-plus"></i> 新增功能点</button>
             </div>
           </div>
 
-          <div id="testdiv" style="margin: 0 15%" v-html ="testData">
-hehe
-          </div>
 
-
-
-<div class="modal fade" id="proManageModal" tabindex="-1" role="dialog" aria-labelledby="proManageModalLabel" aria-hidden="false">
+<div class="modal fade" id="featureModal" tabindex="-1" role="dialog" aria-labelledby="proManageModalLabel" aria-hidden="false">
     <div class="modal-dialog" style="width: 100%">
         <div class="modal-content">
                 <div class="close rotate">
-                    <span class="icon fa fa-close" onclick="$('#proManageModal').modal('hide')"></span>
+                    <span class="icon fa fa-close" onclick="$('#featureModal').modal('hide')"></span>
                 </div>
             <div class="alert bg-gray">
-                <h4><i class="icon fa fa-edit"></i>新增功能块 
+                <h4><i class="icon fa fa-edit"></i>新增功能点 
                 </h4>
             </div>
             <div class="modal-body">
- @Html.Partial("../Extends/projectModal.cshtml")
+ @Html.Partial("../Extends/featureModal.cshtml")
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" onclick="$('#proManageModal').modal('hide')">关闭 </button>
+                <button type="button" class="btn btn-default" onclick="$('#featureModal').modal('hide')">关闭 </button>
             </div>
         </div>
     </div>
@@ -75,36 +64,36 @@ hehe
 <script>
 
     var proVue = new Vue({
-      el: "#probody",
+      el: "#featurebody",
       data: {
-        proData: @Html.Raw(ViewData["proData"])
+        ItemData: @Html.Raw(ViewData["FeatureData"])
       },
       methods: {
-          addPro : function(){
-            $('#proManageModal').modal('show')
+          addItem : function(){
+            $('#featureModal').modal('show')
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
           },
           doMarkDown :function(id){
             // console.log(id);
-            window.location.href = "/MarkDown/" + id;
+            window.location.href = "/FMarkDown/" + id;
 
           },
-          delPro : function(item){
+          delItem : function(item){
             //TODO:  这里要加删除的询问
-            this.$http.delete('/Project/'+item.projectId).then(response => {
+            this.$http.delete('/Feature/'+item.featuresId).then(response => {
               console.log(response.data)
             }, rep => {
               console.log('失败')
             });
           },
-          editPro : function(item){
+          editItem : function(item){
 
-            modalHerdV.proEntity = {projectId : item.projectId, projectName: item.projectName};
+            modalHerdV.featureEntity = {featuresId : item.featuresId, featuresName: item.featuresName};
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
-            for(var i in item.projectDepends){
-              var pd =item.projectDepends[i];
+            for(var i in item.featuresDepends){
+              var pd =item.featuresDepends[i];
               if(pd.fileType == 'javascript'){
                 jsVue.jsData.push({ name: pd.fileName, show: true });
               }
@@ -112,22 +101,10 @@ hehe
                 cssVue.cssData.push({ name: pd.fileName, show: true });
               }
             }
-            $('#proManageModal').modal('show')
-          },
-          featuresEdit :function(projectId){
-
-            // var FeatureEntity = {};
-            // FeatureEntity.projectId = projectId;
-
-            // $.ajax({
-            //   url: '/Feature/',
-            //   type: 'get',
-            //   data: FeatureEntity
-            // });
-            window.open('/Project/'+projectId+'/Feature/')
+            $('#featureModal').modal('show')
           },
           dotest :function(){
-            testV.bindHTML(this.proData[0].projectMarkDown);
+            testV.bindHTML(this.ItemData[0].featuresMardDown);
 
               
           }

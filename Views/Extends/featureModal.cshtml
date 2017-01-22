@@ -1,0 +1,369 @@
+<style>
+
+th,td{
+ padding: 0px 10px;
+    font-size: 13px;
+}
+
+
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-active {
+  padding-left: 30px;
+  opacity: 0;
+}
+
+</style>
+
+
+
+
+<!--这是一个警告弹出框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="alert bg-gray">
+                <h4><i class="icon fa" v-bind:class ="icoClass"></i> {{msgType}}
+                </h4>
+            </div>
+            <div class="modal-body">
+                {{msgContent}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="$('#myModal').modal('hide')">关闭 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>功能点管理</h2>
+
+<div id="headControl" class="col-md-12" style="padding-bottom: 20px">
+<div class="input-group">
+    <input id="featuresName" type="text" v-model ="featureEntity.featuresName" name="message" placeholder="功能点名称" class="form-control"/>
+    <span class="input-group-btn">
+        <button v-on:click="saveFeature" class="btn btn-Default btn-flat">保存</button>
+    </span>
+</div>
+</div>
+<div id="jsDiv" class="col-md-6">
+    <div class="box box-default box-solid">
+        <div class="box-header with-border" v-bind:style="headStyle">
+            <h3 class="box-title">js依赖</h3>
+
+            <div class="box-tools pull-center">(js文件拖放到这里)
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa " v-bind:class="{'fa-plus':isplus,'fa-minus':!isplus}"></i>
+                </button>
+            </div>
+        </div>
+        <div v-for="item in jsData">
+
+<transition name="slide-fade">
+        <div class="box-body" v-show="item.show" v-bind:style="bodyStyle">
+    {{item.name}}
+<div class="box-tools pull-right">
+    <button v-on:click="item.show = !item.show">
+                        <i class="fa fa-fw fa-remove"></i>
+                    </button>
+</div>
+</div>
+</transition>
+        </div>
+</div>
+</div>
+<div id="cssDiv" class="col-md-6">
+    <div class="box box-default box-solid">
+        <div class="box-header with-border" v-bind:style="headStyle">
+            <h3 class="box-title">css文件</h3>
+
+            <div class="box-tools pull-right">(css文件拖放到这里)
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa" v-bind:class="{'fa-plus':isplus,'fa-minus':!isplus}"></i>
+                </button>
+            </div>
+        </div>
+        <div v-for="item in cssData" >
+<transition name="slide-fade">
+        <div class="box-body" v-show="item.show"  v-bind:style="bodyStyle">
+    {{item.name}}
+<div class="box-tools pull-right">
+    <button v-on:click="item.show = !item.show"><i class="fa fa-fw fa-remove"></i></button>
+</div>
+        </div>
+</transition>
+</div>
+</div>
+</div>
+
+<script>
+
+
+
+    $(function () {
+
+
+
+        $('#jsDiv').on({
+            dragleave: function (e) {    //拖离
+                e.preventDefault();
+                moveFun(jsVue,false);
+            },
+            drop: function (e) {  //拖后放
+                e.preventDefault();
+                moveFun(jsVue,false);
+            },
+            dragenter: function (e) {    //拖进
+                e.preventDefault();
+                moveFun(jsVue,true);
+            },
+            dragover: function (e) {    //拖来拖去
+                e.preventDefault();
+                moveFun(jsVue,true);
+            }
+        });
+        $('#cssDiv').on({
+            dragleave: function (e) {    //拖离
+                e.preventDefault();
+                moveFun(cssVue,false);
+            },
+            drop: function (e) {  //拖后放
+                e.preventDefault();
+                moveFun(cssVue,false);
+            },
+            dragenter: function (e) {    //拖进
+                e.preventDefault();
+                moveFun(cssVue,true);
+            },
+            dragover: function (e) {    //拖来拖去
+                e.preventDefault();
+                moveFun(cssVue,true);
+            }
+        });
+
+        var jsbox = $('#jsDiv')[0]; //拖拽区域
+
+        jsbox.addEventListener("drop", function (e) {
+            e.preventDefault(); //取消默认浏览器拖拽效果
+
+            var fileList = e.dataTransfer.files; //获取文件对象
+            for (var i = 0; i < fileList.length; i++) {
+
+                //检测是否是拖拽文件到页面的操作
+                if (fileList.length == 0) {
+                    return;
+                }
+                //检测文件是不是css和js
+                if (fileList[i].type.indexOf('javascript') === -1) {
+                    console.log(fileList[i].type);
+                    modalmodalV.alert("警告！", "仅允许上传js文件!");
+                    return;
+                }
+
+                //拖拉文件到浏览器
+                var filename = fileList[i].name; //文件名称
+                var filesize = Math.floor((fileList[i].size) / 10240);
+                if (filesize > 10240) {
+                    modalmodalV.alert("警告！", "单个文件大小不允许超过10兆!");
+                    return;
+                }
+                else {
+                    var noAppend =true;
+                    for(var i in jsVue.jsData){
+                        if(jsVue.jsData[i].name == filename){
+                            if(jsVue.jsData[i].show == false ){
+                                jsVue.jsData[i].show = true;
+                                noAppend = false;
+                                break;
+                            }
+                            noAppend =false;
+                        }
+                    }
+                    if(noAppend){
+                        var jsfile = { name: filename, show: true };
+                        jsVue.jsData.push(jsfile)
+                        // TODO:  增加文件服务器的上传
+                    }
+                }
+            }
+        }, false);
+
+        var cssbox = $('#cssDiv')[0]; //拖拽区域
+        cssbox.addEventListener("drop", function (e) {
+            e.preventDefault(); //取消默认浏览器拖拽效果
+
+            var fileList = e.dataTransfer.files; //获取文件对象
+            for (var i = 0; i < fileList.length; i++) {
+
+                //检测是否是拖拽文件到页面的操作
+                if (fileList.length == 0) {
+                    return;
+                }
+                //检测文件是不是css和js
+                if (fileList[i].type.indexOf('css') === -1) {
+                    console.log(fileList[i].type);
+                    modalmodalV.alert(modalmodalV.msgTypeEnmu.warn, "仅允许上传css文件！");
+                    return;
+                }
+
+                //拖拉文件到浏览器
+                // var img = window.URL.createObjectURL(fileList[i]);
+                var filename = fileList[i].name; //文件名称
+                var filesize = Math.floor((fileList[i].size) / 10240);
+                if (filesize > 10240) {
+                    modalmodalV.alert(modalmodalV.msgTypeEnmu.warn, "单个文件大小不允许超过10兆!");
+                    return;
+                }
+                else {
+                    var noAppend =true;
+                    for(var i in cssVue.cssData){
+                        if(cssVue.cssData[i].name == filename){
+                            if(cssVue.cssData[i].show == false ){
+                                cssVue.cssData[i].show = true;
+                                noAppend = false;
+                                break;
+                            }
+                            noAppend =false;
+                        }
+                    }
+                    if (noAppend) {
+                        var cssfile = { name: filename, show: true };
+                        cssVue.cssData.push(cssfile)
+                        // TODO:  增加文件服务器的上传
+                    }
+                }
+            }
+        }, false);
+    })
+
+    var jsVue = new Vue({
+        el: "#jsDiv",
+        data: {
+            jsData: [],
+            isplus: true,
+            headStyle :{
+                background:'#d2d6de'
+            },
+            bodyStyle : {
+                background:'white'
+            }
+        },
+        created: function () {
+            if (this.jsData.length > 0) {
+                this.isplus = false;
+            }
+        }
+    })
+
+    var cssVue = new Vue({
+        el: "#cssDiv",
+        data: {
+            cssData: [],
+            isplus: true,
+            headStyle :{
+                background:'#d2d6de'
+            },
+            bodyStyle : {
+                background:'white'
+            }
+
+        },
+        created: function () {
+            if (this.cssData.length > 0) {
+                this.isplus = false;
+            }
+        }
+    })
+
+    var modalmodalV = new Vue({
+        el: '#myModal',
+        data: {
+            msgType: '',
+            msgContent: '',
+            msgTypeEnmu: { info: '提示！', warn: '警告！', error: '错误！', success: '成功！' }
+        },
+        computed :{
+            icoClass :function(){
+                return {
+                    'fa-info' : this.msgType ==  this.msgTypeEnmu.info,
+                    'fa-warning' : this.msgType ==  this.msgTypeEnmu.warn,
+                    'fa-ban' : this.msgType ==  this.msgTypeEnmu.error,
+                    'fa-check' : this.msgType ==  this.msgTypeEnmu.success,
+                }
+            }            
+        },
+        methods: {
+            alert: function (msgT, msgC) {
+                this.msgType = msgT;
+                this.msgContent = msgC;
+                $('#myModal').modal('show');
+            }
+        }
+    })
+
+    var modalHerdV = new Vue({
+        el: '#headControl',
+        data: {
+            featureEntity: {featuresId : 0, featuresName: ''},
+            msgType: '警告',
+            msgContent: "测试"
+        },
+        methods: {
+            saveFeature: function () {
+                var depList = [];
+
+                for(var i =0;i<jsVue.jsData.length;i++){
+                    if(jsVue.jsData[i].show){
+                        depList.push({ fileName: jsVue.jsData[i].name, fileType: 'javascript' });
+                    }
+                }
+                for(var i =0;i<cssVue.cssData.length;i++){
+                    if (cssVue.cssData[i].show) {
+                        depList.push({ fileName: cssVue.cssData[i].name, fileType: 'css' });
+                    }
+                }
+
+
+                var subData ={};
+                subData.featureEntity = this.featureEntity;
+                subData.FeatureDepLst = depList;
+
+                if(this.featureEntity.featuresId == 0){
+                    this.$http.post('/Feature', JSON.stringify(subData), { emulateJSON: true }).then(response => {
+                        console.log(response.data)
+                    }, rep => {
+                        console.log('失败')
+                    });
+                }
+                else{
+                    this.$http.put('/Feature', JSON.stringify(subData), { emulateJSON: true }).then(response => {
+                        console.log(response.data)
+                    }, rep => {
+                        console.log('失败')
+                    });
+                }
+
+            }
+        }
+    })
+    
+
+
+    function moveFun(theVue,isOn){
+        if (isOn) {
+            theVue.headStyle.background = 'wheat'
+            theVue.bodyStyle.background = 'wheat'
+        }
+        else{
+            theVue.headStyle.background = '#d2d6de'
+            theVue.bodyStyle.background = 'white'
+        }
+    }
+
+
+
+
+
+</script>

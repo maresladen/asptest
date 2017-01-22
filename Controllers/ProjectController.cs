@@ -52,12 +52,12 @@ namespace WebApplication.Controllers
                 {
                     prodata = dbcon.Projects.Where(p => p.projectId == id).Include(p => p.projectDepends).ToList();
                 }
-                if (prodata.Count > 0)
+                if (prodata.Count == 0)
                 {
-                    ViewData["proData"] = JsonConvert.SerializeObject(prodata);
+                    ViewData["proData"] = "{}";
                 }
                 else{
-                    ViewData["proData"]  ="{}";
+                    ViewData["proData"] = JsonConvert.SerializeObject(prodata);
                 }
             }
             return View();
@@ -239,7 +239,7 @@ namespace WebApplication.Controllers
             return Json("successs");
         }
 
-                [HttpPut]
+        [HttpPut]
         [Route("/MarkDown/{proEntity?}")]
         public IActionResult MdPutTest(Project proEntity)
         {

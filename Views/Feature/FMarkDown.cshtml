@@ -1,7 +1,7 @@
 @{
     Layout =null;
 }
- @model WebApplication.Models.Project
+ @model WebApplication.Models.Features
 
     <link rel="stylesheet" href="~/css/markdown-plus.min.css"/>
     <script src="~/js/dist/markdown-plus.min.js" charset="utf-8"></script>
@@ -203,7 +203,7 @@ T3: 2014-01-02, 9d"></i>
 
 <script>
      function translatenbsp() {
-       var a = '@Model.projectMdText'
+       var a = '@Model.featuresMdText'
        var c = document.createElement('div');
        c.innerHTML = a;
        a = c.innerText || c.textContent;
@@ -216,11 +216,11 @@ T3: 2014-01-02, 9d"></i>
      function mdSave() {
 
        var proEntity ={}
-       proEntity.projectId = '@Model.projectId';
+       proEntity.projectId = '@Model.featuresId';
        proEntity.projectMdText = editor.getValue();
        proEntity.projectMarkDown =$('#preview').html(); 
         $.ajax({
-          url: '/MarkDown',
+          url: '/FMarkDown',
           type: 'put',
           data: proEntity,
           success:function(data){
