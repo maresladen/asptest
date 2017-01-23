@@ -41,7 +41,7 @@ namespace WebApplication.Controllers
 #region markDown获取
 
         [HttpGetAttribute]
-        [RouteAttribute("/MarkDown/{pfType}/{pfid}/{id?}")]
+        [RouteAttribute("/{pfType}/{pfid}/MarkDown/{id?}")]
         public IActionResult MarkDown(string pfType, int pfid, int id)
         {
             MarkDown mdEntity;
@@ -71,7 +71,7 @@ namespace WebApplication.Controllers
             dynamic Jsondm = jsonObj;
 
             MarkDown mdEntity = Jsondm.mdEntity.ToObject<MarkDown>();
-
+            mdEntity.MdText = mdEntity.MdText.Replace(@"\", "|BETAFUN|");
             string strtype = Jsondm.saveType.ToObject<string>();
             int typeId = Jsondm.saveId.ToObject<int>();
 
@@ -97,7 +97,7 @@ namespace WebApplication.Controllers
                     else if (strtype == strFeature)
                     {
                         Features tempEntity = new Features();
-                        tempEntity.projectId = typeId;
+                        tempEntity.featuresId = typeId;
                         tempEntity.mdId = mdId;
                         dbcon.Features.Attach(tempEntity);
                         dbcon.Entry(tempEntity).State = EntityState.Unchanged;
@@ -127,6 +127,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
+                    mdEntity.MdText = mdEntity.MdText.Replace(@"\","|BETAFUN|");
                     dbcon.MarkDowns.Update(mdEntity);
                     dbcon.SaveChanges();
                 }

@@ -30,10 +30,10 @@ namespace WebApplication.Controllers
         DbContextOptions<ApplicationDbContext> dbconOption;
 
         private readonly SignInManager<ApplicationUser> _signinManager;
-        public FeatureController(IServiceProvider service,SignInManager<ApplicationUser> signinManager)
+        public FeatureController(IServiceProvider service, SignInManager<ApplicationUser> signinManager)
         {
             this.dbconOption = service.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
-            this._signinManager =signinManager;
+            this._signinManager = signinManager;
         }
 
 #region 功能点获取
@@ -41,10 +41,11 @@ namespace WebApplication.Controllers
         [HttpGetAttribute]
         [RouteAttribute("/Project/{projectId}/Feature/{id?}")]
         //就是一个注解
-        public IActionResult FManage(int projectId,int id)
+        public IActionResult FManage(int projectId, int id)
         {
-            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption)){
-                List<Features> data =new List<Features>();
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                List<Features> data = new List<Features>();
                 //优先级为单个的功能点ID,若功能点ID为0,则取功能点ID
                 data = dbcon.Features.Where(p => (id == 0 ? p.projectId == projectId : p.featuresId == id)).Include(p => p.featuresDepends).ToList();
                 if (data.Count == 0)
@@ -52,7 +53,8 @@ namespace WebApplication.Controllers
                     ViewData["FeatureData"] = "{}";
                     ViewData["ProjectId"] = projectId;
                 }
-                else{
+                else
+                {
                     ViewData["FeatureData"] = JsonConvert.SerializeObject(data);
                     ViewData["ProjectId"] = projectId;
                 }
@@ -61,12 +63,12 @@ namespace WebApplication.Controllers
         }
 
 #endregion
-        
+
 #region 功能点新增
 
         [HttpPost]
         [Route("/Feature/{jsonObj?}")]
-        public IActionResult Post([FromBody]JObject  jsonObj)
+        public IActionResult Post([FromBody]JObject jsonObj)
         {
             dynamic Jsondm = jsonObj;
 
@@ -75,8 +77,9 @@ namespace WebApplication.Controllers
             FeaturesDepend[] FeatureDepLst = Jsondm.FeatureDepLst.ToObject<FeaturesDepend[]>();
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
-                dbcon.Database.BeginTransaction(); 
-                try{
+                dbcon.Database.BeginTransaction();
+                try
+                {
                     dbcon.Features.Add(FeatureEntity);
                     dbcon.SaveChanges();
                     if (FeatureDepLst.Length > 0)
@@ -90,9 +93,10 @@ namespace WebApplication.Controllers
                     dbcon.SaveChanges();
                     dbcon.Database.CommitTransaction();
                 }
-                catch(Exception){
-                   dbcon.Database.RollbackTransaction(); 
-                   return Json("faild");
+                catch (Exception)
+                {
+                    dbcon.Database.RollbackTransaction();
+                    return Json("faild");
                 }
             }
             //这里应该把重新封装json然后返回回去
@@ -104,7 +108,7 @@ namespace WebApplication.Controllers
 
         [HttpPut]
         [Route("/Feature/{jsonObj?}")]
-        public IActionResult Put([FromBody]JObject  jsonObj)
+        public IActionResult Put([FromBody]JObject jsonObj)
         {
             dynamic Jsondm = jsonObj;
 
@@ -153,7 +157,7 @@ namespace WebApplication.Controllers
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
                 try
-                { 
+                {
                     Features featureEntity = new Features();
                     featureEntity.featuresId = id;
                     dbcon.Features.Remove(featureEntity);
@@ -172,71 +176,34 @@ namespace WebApplication.Controllers
 
 #endregion
 
-#region markDwon获取
-
-        // [HttpGetAttribute]
-        // [RouteAttribute("/FMarkDown/{id}")]
-        // public IActionResult FMarkDown(int id)
-        // {
-        //     //如果id为simple,忽略大小写,传入内容选择调用simple
-        //     //否则则通过id到数据库中查询,查询数据表为projectDepend表
-        //     Features featureEntity = new Features();
-        //     if(id == -1){
-        //         ViewData["simple"] = "1";
-        //     }
-        //     else{
-        //         ViewData["simple"] = "0";
-        //         using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-        //         {
-        //              featureEntity = dbcon.Features.Where(d => d.featuresId == id).FirstOrDefault();
-        //         }
-        //     }
-        //    return View(featureEntity);
-        // }
+#region HTML编辑器获取
+        [HttpGetAttribute]
+        [RouteAttribute("/Feature/HTML/{id?}")]
+        public IActionResult HtmlEdit(int fid)
+        {
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                Features entity = dbcon.Features.Where(f => f.featuresId == fid).FirstOrDefault();
+                return View(entity);
+            }
+        }
 
 #endregion
 
-#region markDwon修改
-        // [HttpPut]
-        // [Route("/FMarkDown/{featureEntity?}")]
-        // public IActionResult MdPutTest(Features featureEntity)
-        // {
-        //     using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-        //     {
-        //         try
-        //         {
-        //             featureEntity.featuresMdText = featureEntity.featuresMdText.Replace(@"\","|BETAFUN|");
-        //             dbcon.Features.Attach(featureEntity);
-
-        //             dbcon.Entry(featureEntity).State = EntityState.Unchanged;
-        //             dbcon.Entry(featureEntity).Property(x => x.featuresMdText).IsModified = true;
-        //             dbcon.Entry(featureEntity).Property(x => x.featuresMardDown).IsModified = true;
-        //             dbcon.SaveChanges();
-        //         }
-        //         catch (Exception ex)
-        //         {
-        //             throw ex;
-        //         }
-        //     }
-        //     return Json("successs");
-        // }
-
-
-
-#endregion
 
 
 #region API接口,未开始
 
         [HttpGet]
         [RouteAttribute("/API/Project/{id?}")]
-        public IActionResult ApiGet(int id){
+        public IActionResult ApiGet(int id)
+        {
             return Json("ok");
         }
 
 
 #endregion
-        
+
     }
 
 }

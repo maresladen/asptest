@@ -22,6 +22,7 @@
                   <span class="text">{{item.featuresName}}</span>
                   <!--<small class="label label-danger"><i class="fa  fa-user-plus"></i>顾锋</small>-->
                   <div class="tools">
+                    <i class="fa fa-jsfiddle" v-on:click="doHTML(item.featuresId)">MD</i>
                     <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.featuresId,item.mdId)">MD</i>
                     <i class="fa fa-edit" v-on:click="editItem(item)">编辑</i>
                     <i class="fa fa-trash-o" v-on:click="delItem(item)">删除</i>
@@ -76,8 +77,12 @@
             cssVue.cssData.splice(0,cssVue.cssData.length);
           },
           doMarkDown :function(fid,mid){
-            window.location.href = "/MarkDown/Feature/" + fid + "/" +mid;
+            window.open("/Feature/"+ fid + "/MarkDown/" +mid);
 
+          },
+          doHTML :function(fid){
+
+            window.open("/Feature/HTML/" + fid);
           },
           delItem : function(item){
             //TODO:  这里要加删除的询问

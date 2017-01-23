@@ -91,7 +91,7 @@ hehe
             if(item.mdId != 0){
               refId =item.mdId;
             }
-            window.location.href = "/MarkDown/Project/" + item.projectId+"/"+refId;
+            window.open("/Project/"+ item.projectId +"/MarkDown/" +refId);
           },
           delPro : function(item){
             //TODO:  这里要加删除的询问
