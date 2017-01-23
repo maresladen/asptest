@@ -118,8 +118,7 @@ namespace WebApplication.Controllers
                 {
                     dbcon.Features.Attach(FeatureEntity);
                     dbcon.Entry(FeatureEntity).State = EntityState.Modified;
-                    dbcon.Entry(FeatureEntity).Property(x => x.featuresMdText).IsModified = false;
-                    dbcon.Entry(FeatureEntity).Property(x => x.featuresMardDown).IsModified = false;
+                    dbcon.Entry(FeatureEntity).Property(x => x.featuresName).IsModified = false;
 
                     //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
                     string strDel = string.Format("delete from FeaturesDepend where featuresId ={0};", FeatureEntity.featuresId);
@@ -175,52 +174,52 @@ namespace WebApplication.Controllers
 
 #region markDwon获取
 
-        [HttpGetAttribute]
-        [RouteAttribute("/FMarkDown/{id}")]
-        public IActionResult FMarkDown(int id)
-        {
-            //如果id为simple,忽略大小写,传入内容选择调用simple
-            //否则则通过id到数据库中查询,查询数据表为projectDepend表
-            Features featureEntity = new Features();
-            if(id == -1){
-                ViewData["simple"] = "1";
-            }
-            else{
-                ViewData["simple"] = "0";
-                using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-                {
-                     featureEntity = dbcon.Features.Where(d => d.featuresId == id).FirstOrDefault();
-                }
-            }
-           return View(featureEntity);
-        }
+        // [HttpGetAttribute]
+        // [RouteAttribute("/FMarkDown/{id}")]
+        // public IActionResult FMarkDown(int id)
+        // {
+        //     //如果id为simple,忽略大小写,传入内容选择调用simple
+        //     //否则则通过id到数据库中查询,查询数据表为projectDepend表
+        //     Features featureEntity = new Features();
+        //     if(id == -1){
+        //         ViewData["simple"] = "1";
+        //     }
+        //     else{
+        //         ViewData["simple"] = "0";
+        //         using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+        //         {
+        //              featureEntity = dbcon.Features.Where(d => d.featuresId == id).FirstOrDefault();
+        //         }
+        //     }
+        //    return View(featureEntity);
+        // }
 
 #endregion
 
 #region markDwon修改
-        [HttpPut]
-        [Route("/FMarkDown/{featureEntity?}")]
-        public IActionResult MdPutTest(Features featureEntity)
-        {
-            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-            {
-                try
-                {
-                    featureEntity.featuresMdText = featureEntity.featuresMdText.Replace(@"\","|BETAFUN|");
-                    dbcon.Features.Attach(featureEntity);
+        // [HttpPut]
+        // [Route("/FMarkDown/{featureEntity?}")]
+        // public IActionResult MdPutTest(Features featureEntity)
+        // {
+        //     using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+        //     {
+        //         try
+        //         {
+        //             featureEntity.featuresMdText = featureEntity.featuresMdText.Replace(@"\","|BETAFUN|");
+        //             dbcon.Features.Attach(featureEntity);
 
-                    dbcon.Entry(featureEntity).State = EntityState.Unchanged;
-                    dbcon.Entry(featureEntity).Property(x => x.featuresMdText).IsModified = true;
-                    dbcon.Entry(featureEntity).Property(x => x.featuresMardDown).IsModified = true;
-                    dbcon.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            return Json("successs");
-        }
+        //             dbcon.Entry(featureEntity).State = EntityState.Unchanged;
+        //             dbcon.Entry(featureEntity).Property(x => x.featuresMdText).IsModified = true;
+        //             dbcon.Entry(featureEntity).Property(x => x.featuresMardDown).IsModified = true;
+        //             dbcon.SaveChanges();
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             throw ex;
+        //         }
+        //     }
+        //     return Json("successs");
+        // }
 
 
 

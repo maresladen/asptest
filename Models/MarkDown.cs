@@ -16,7 +16,6 @@ namespace WebApplication.Models
 		public string MdHTML { get; set; }
 		[Column(TypeName="text")]
 		public string MdText { get; set; }
-		public  virtual int typeID { get; set; }
     }
 
 }

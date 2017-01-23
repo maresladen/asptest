@@ -17,11 +17,8 @@ namespace WebApplication.Models
 		public string featuresHtml { get; set; }
 		public string featuresScript { get; set; }
 		public string featuresCss { get; set; }
-		[Column(TypeName="mediumtext")]
-		public string featuresMardDown { get; set; }
-		[Column(TypeName="text")]
-		public string featuresMdText { get; set; }
 
+        public int mdId { get; set; }
 		public virtual ICollection<FeaturesDepend> featuresDepends {get;set;}
     }
 }

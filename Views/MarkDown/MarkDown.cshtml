@@ -1,6 +1,7 @@
 @{
     Layout =null;
 }
+ @model WebApplication.Models.MarkDown
 
     <link rel="stylesheet" href="~/css/markdown-plus.min.css"/>
     <script src="~/js/dist/markdown-plus.min.js" charset="utf-8"></script>
@@ -162,47 +163,13 @@ T3: 2014-01-02, 9d"></i>
 
     </div>
 
- @if (ViewData["simple"] == "1"){
-
     <script>
-    $(function() {
-  $.get('../mdSource/sample.md', function(data) { // load sample text
-    editor.session.setValue(data, -1);
-    setTimeout(function() {
-      window.addEventListener("hashchange", function() {
-        $('.ui-layout-east').scrollTop($('.ui-layout-east').scrollTop() - 6);
-      }); // a little gap to top
-      if(window.location.hash.length > 0) {
-        $('.ui-layout-east').scrollTop($(window.location.hash).offset().top - 30); // scroll to hash element
-      }
-    }, 1000);
-  });
-});
-    </script>
+      $(function () {
+        editor.session.setValue(translatenbsp(), -1);
+      });
 
-
- }
- else{
-    <script>
-     $(function() {
-        editor.session.setValue( translatenbsp(), -1);
-    // setTimeout(function() {
-    //   window.addEventListener("hashchange", function() {
-    //     $('.ui-layout-east').scrollTop($('.ui-layout-east').scrollTop() - 6);
-    //   }); // a little gap to top
-    //   if(window.location.hash.length > 0) {
-    //     $('.ui-layout-east').scrollTop($(window.location.hash).offset().top - 30); // scroll to hash element
-    //   }
-    // }, 1000);
-     });
-
-    </script>
- }
-
-
-<script>
      function translatenbsp() {
-       var a = '@DataView["mdText"]'
+       var a = '@Model.MdText'
        var c = document.createElement('div');
        c.innerHTML = a;
        a = c.innerText || c.textContent;
@@ -215,18 +182,40 @@ T3: 2014-01-02, 9d"></i>
      function mdSave() {
 
        var mdEntity ={}
-       mdEntity.id = '';
+       mdEntity.id = '@Model.MdId';
        mdEntity.MdText = editor.getValue();
-       mdEntity.MardDown =$('#preview').html(); 
+       mdEntity.MdHTML =$('#preview').html(); 
+
+       var jsonObj = {}
+       jsonObj.mdEntity = mdEntity;
+       jsonObj.saveType = '@ViewData["pfType"]';
+       jsonObj.saveId = '@ViewData["pfId"]';
+       
+       if(mdEntity.id ==0){
         $.ajax({
-          url: '/FMarkDown',
-          type: 'put',
-          data: featureEntity,
+          url: '/MarkDown/',
+          type: 'post',
+          contentType: 'application/json;charset=utf-8',
+          data: JSON.stringify(jsonObj),
+          dataType: 'json',
           success:function(data){
             $('[data-remodal-id=save-modal]').remodal().open()
             console.log(data);
           }
         });
+       }
+       else{
+        $.ajax({
+          url: '/MarkDown/',
+          type: 'put',
+          data: mdEntity,
+          success:function(data){
+            $('[data-remodal-id=save-modal]').remodal().open()
+            console.log(data);
+          }
+        });
+
+       }
 
         
      }

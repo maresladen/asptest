@@ -45,30 +45,28 @@ namespace WebApplication.Data
         }
            private void initTable(ModelBuilder builder){
             builder.Entity<FeaIgnoreProDepend>(entity =>
-                       {
-                           entity.HasKey(e => e.freaturesDependId)
-                               .HasName("PK_FeaIgnoreProDepend");
+            {
+                entity.HasKey(e => e.freaturesDependId)
+                    .HasName("PK_FeaIgnoreProDepend");
 
-                           entity.Property(e => e.freaturesDependId)
-                               .HasColumnName("freaturesDependId")
-                               .HasColumnType("int(11)");
+                entity.Property(e => e.freaturesDependId)
+                    .HasColumnName("freaturesDependId")
+                    .HasColumnType("int(11)");
 
-                           entity.Property(e => e.featuresId)
-                               .HasColumnName("featuresId")
-                               .HasColumnType("int(11)");
+                entity.Property(e => e.featuresId)
+                    .HasColumnName("featuresId")
+                    .HasColumnType("int(11)");
 
-                           entity.Property(e => e.projectDependid)
-                               .HasColumnName("projectDependid")
-                               .HasColumnType("int(11)");
-                       });
+                entity.Property(e => e.projectDependid)
+                    .HasColumnName("projectDependid")
+                    .HasColumnType("int(11)");
+            });
 
             builder.Entity<Features>(entity =>
             {
                 entity.Property(e => e.featuresId)
                     .HasColumnName("featuresId")
                     .HasColumnType("int(11)");
-
-           
 
                 entity.Property(e => e.featuresCss)
                     .HasColumnName("featuresCss")
@@ -78,29 +76,23 @@ namespace WebApplication.Data
                     .HasColumnName("featuresHtml")
                     .HasColumnType("varchar(6000)");
 
-                entity.Property(e => e.featuresMardDown)
-                    .HasColumnName("featuresMardDown")
-                    .HasColumnType("varchar(mediumtext)");
-
-                entity.Property(e => e.featuresMdText)
-                    .HasColumnName("featuresMdText")
-                    .HasColumnType("text");
-
                 entity.Property(e => e.featuresName)
                     .HasColumnName("featuresName")
-                    .HasColumnType("varchar(text)");
+                    .HasColumnType("varchar(255)");
 
                 entity.Property(e => e.featuresScript)
                     .HasColumnName("featuresScript")
                     .HasColumnType("varchar(6000)");
 
+                entity.Property(e => e.mdId)
+                    .HasColumnName("mdId")
+                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.projectId)
                     .HasColumnName("projectId")
                     .HasColumnType("int(11)");
 
-                 entity.HasMany(e => e.featuresDepends)
-                    .WithOne(p => p.features);
+                
             });
 
             builder.Entity<FeaturesDepend>(entity =>
@@ -135,30 +127,26 @@ namespace WebApplication.Data
                     .HasColumnName("fileType")
                     .HasColumnType("varchar(255)");
 
+                entity.HasOne(e => e.features)
+                    .WithMany(p => p.featuresDepends);
+
             });
 
-            builder.Entity<Project>(entity =>
+               builder.Entity<Project>(entity =>
             {
                 entity.Property(e => e.projectId)
                     .HasColumnName("projectId")
                     .HasColumnType("int(11)");
 
-
-                entity.Property(e => e.projectMarkDown)
-                    .HasColumnName("projectMarkDown")
-                    .HasColumnType("mediumtext");
-
-                entity.Property(e => e.projectMdText)
-                    .HasColumnName("projectMdText")
-                    .HasColumnType("text");
-
                 entity.Property(e => e.projectName)
                     .HasColumnName("projectName")
                     .HasColumnType("varchar(255)");
 
-                entity.HasMany(d => d.projectDepends)
-                    .WithOne(p => p.project);
+                entity.Property(e => e.mdId)
+                    .HasColumnName("mdId")
+                    .HasColumnType("int(11)");
             });
+
 
             builder.Entity<ProjectDepend>(entity =>
             {
@@ -191,6 +179,26 @@ namespace WebApplication.Data
                 entity.Property(e => e.projectId)
                     .HasColumnName("projectId")
                     .HasColumnType("int(11)");
+
+                    
+                entity.HasOne(e => e.project)
+                    .WithMany(p => p.projectDepends);
+
+            });
+
+
+            builder.Entity<MarkDown>(entity =>
+            {
+                entity.HasKey(e => e.MdId)
+                    .HasName("PK_MarkDown");
+
+                entity.Property(e => e.MdHTML)
+                    .HasColumnName("mdHTML")
+                    .HasColumnType("mediumtext");
+
+                entity.Property(e => e.MdText)
+                    .HasColumnName("mdText")
+                    .HasColumnType("text");
 
             });
         }

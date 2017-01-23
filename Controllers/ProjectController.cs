@@ -42,12 +42,12 @@ namespace WebApplication.Controllers
         public IActionResult Manage(int id)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption)){
+                
                 // List<Project> prodata = dbcon.Projects.Include(p => p.projectDepends).ToList();
                 List<Project> prodata =new List<Project>();
                 if (id == 0)
                 {
-                    prodata = dbcon.Projects.Include(p => p.projectDepends).ToList();
-                }
+                    prodata = dbcon.Projects.Include(p => p.projectDepends).ToList();                }
                 else
                 {
                     prodata = dbcon.Projects.Where(p => p.projectId == id).Include(p => p.projectDepends).ToList();
@@ -122,8 +122,7 @@ namespace WebApplication.Controllers
                 {
                     dbcon.Projects.Attach(proEntity);
                     dbcon.Entry(proEntity).State = EntityState.Modified;
-                    dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = false;
-                    dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = false;
+                    dbcon.Entry(proEntity).Property(x => x.projectName).IsModified = false;
 
                     //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
                     string strDel = string.Format("delete from ProjectDepend where projectId ={0};", proEntity.projectId);
@@ -179,96 +178,96 @@ namespace WebApplication.Controllers
 
 #region markDwon获取
 
-        [HttpGetAttribute]
-        [RouteAttribute("/MarkDown/{id}")]
-        public IActionResult MarkDown(int id)
-        {
-            //如果id为simple,忽略大小写,传入内容选择调用simple
-            //否则则通过id到数据库中查询,查询数据表为projectDepend表
-            Project proEntity = new Project();
-            if(id == -1){
-                ViewData["simple"] = "1";
-            }
-            else{
-                ViewData["simple"] = "0";
-                using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-                {
-                     proEntity = dbcon.Projects.Where(d => d.projectId == id).FirstOrDefault();
-                    // if (proEntity != null)
-                    // {
-                    //     // proEntity.projectMarkDown =string.Empty;
+        // [HttpGetAttribute]
+        // [RouteAttribute("/MarkDown/{id}")]
+        // public IActionResult MarkDown(int id)
+        // {
+        //     //如果id为simple,忽略大小写,传入内容选择调用simple
+        //     //否则则通过id到数据库中查询,查询数据表为projectDepend表
+        //     Project proEntity = new Project();
+        //     if(id == -1){
+        //         ViewData["simple"] = "1";
+        //     }
+        //     else{
+        //         ViewData["simple"] = "0";
+        //         using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+        //         {
+        //              proEntity = dbcon.Projects.Where(d => d.projectId == id).FirstOrDefault();
+        //             // if (proEntity != null)
+        //             // {
+        //             //     // proEntity.projectMarkDown =string.Empty;
                         
-                    //     ViewData["prodata"] = proEntity.projectMdText;
-                    // }
-                }
-            }
-           return View(proEntity);
-        }
+        //             //     ViewData["prodata"] = proEntity.projectMdText;
+        //             // }
+        //         }
+        //     }
+        //    return View(proEntity);
+        // }
 
 #endregion
 
 #region markDwon修改
 
 
-        [HttpPut]
-        [Route("/MarkDownTest/{id?}")]
-        public IActionResult MdPut(int id)
-        {
-            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-            {
-                try
-                {
-                    var tempForm = Request.Form;
+        // [HttpPut]
+        // [Route("/MarkDownTest/{id?}")]
+        // public IActionResult MdPut(int id)
+        // {
+        //     using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+        //     {
+        //         try
+        //         {
+        //             var tempForm = Request.Form;
 
-                    Project proEntity =  new Project();
-                    proEntity.projectId = id;
-                    proEntity.projectMdText = tempForm["projectMdText"];
-                    proEntity.projectMarkDown =  tempForm["projectMarkDown"];
+        //             Project proEntity =  new Project();
+        //             proEntity.projectId = id;
+        //             proEntity.projectMdText = tempForm["projectMdText"];
+        //             proEntity.projectMarkDown =  tempForm["projectMarkDown"];
 
-                    dbcon.Projects.Attach(proEntity);
-                    dbcon.Entry(proEntity).State = EntityState.Unchanged;
-                    dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
-                    dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
-                    dbcon.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            return Json("successs");
-        }
+        //             dbcon.Projects.Attach(proEntity);
+        //             dbcon.Entry(proEntity).State = EntityState.Unchanged;
+        //             dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
+        //             dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
+        //             dbcon.SaveChanges();
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             throw ex;
+        //         }
+        //     }
+        //     return Json("successs");
+        // }
 
-        [HttpPut]
-        [Route("/MarkDown/{proEntity?}")]
-        public IActionResult MdPutTest(Project proEntity)
-        {
-            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-            {
-                try
-                {
-                    // var tempForm = Request.Form;
+        // [HttpPut]
+        // [Route("/MarkDown/{proEntity?}")]
+        // public IActionResult MdPutTest(Project proEntity)
+        // {
+        //     using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+        //     {
+        //         try
+        //         {
+        //             // var tempForm = Request.Form;
 
-                    // Project proEntity =  new Project();
-                    // proEntity.projectId = id;
-                    // proEntity.projectMdText = tempForm["projectMdText"];
-                    // proEntity.projectMarkDown =  tempForm["projectMarkDown"];
+        //             // Project proEntity =  new Project();
+        //             // proEntity.projectId = id;
+        //             // proEntity.projectMdText = tempForm["projectMdText"];
+        //             // proEntity.projectMarkDown =  tempForm["projectMarkDown"];
 
-                    proEntity.projectMdText = proEntity.projectMdText.Replace(@"\","|BETAFUN|");
-                    dbcon.Projects.Attach(proEntity);
+        //             proEntity.projectMdText = proEntity.projectMdText.Replace(@"\","|BETAFUN|");
+        //             dbcon.Projects.Attach(proEntity);
 
-                    dbcon.Entry(proEntity).State = EntityState.Unchanged;
-                    dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
-                    dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
-                    dbcon.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            return Json("successs");
-        }
+        //             dbcon.Entry(proEntity).State = EntityState.Unchanged;
+        //             dbcon.Entry(proEntity).Property(x => x.projectMdText).IsModified = true;
+        //             dbcon.Entry(proEntity).Property(x => x.projectMarkDown).IsModified = true;
+        //             dbcon.SaveChanges();
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             throw ex;
+        //         }
+        //     }
+        //     return Json("successs");
+        // }
 
 
 

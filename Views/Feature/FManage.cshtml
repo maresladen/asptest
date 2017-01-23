@@ -22,7 +22,7 @@
                   <span class="text">{{item.featuresName}}</span>
                   <!--<small class="label label-danger"><i class="fa  fa-user-plus"></i>顾锋</small>-->
                   <div class="tools">
-                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.featuresId)">MD</i>
+                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.featuresId,item.mdId)">MD</i>
                     <i class="fa fa-edit" v-on:click="editItem(item)">编辑</i>
                     <i class="fa fa-trash-o" v-on:click="delItem(item)">删除</i>
                   </div>
@@ -75,9 +75,8 @@
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
           },
-          doMarkDown :function(id){
-            // console.log(id);
-            window.location.href = "/FMarkDown/" + id;
+          doMarkDown :function(fid,mid){
+            window.location.href = "/MarkDown/Feature/" + fid + "/" +mid;
 
           },
           delItem : function(item){

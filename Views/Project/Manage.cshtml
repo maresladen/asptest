@@ -26,7 +26,7 @@
                   <!--<small class="label label-danger"><i class="fa  fa-user-plus"></i>顾锋</small>-->
                   <div class="tools">
                     <i class="fa fa-cogs" v-on:click="featuresEdit(item.projectId)">功能点</i>
-                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item.projectId)">MD</i>
+                    <i class="fa fa-maxcdn" v-on:click="doMarkDown(item)">MD</i>
                     <i class="fa fa-edit" v-on:click="editPro(item)">编辑</i>
                     <i class="fa fa-trash-o" v-on:click="delPro(item)">删除</i>
                   </div>
@@ -86,11 +86,12 @@ hehe
             jsVue.jsData.splice(0,jsVue.jsData.length);
             cssVue.cssData.splice(0,cssVue.cssData.length);
           },
-          doMarkDown :function(id){
-            // console.log(id);
-            //TODO : 是否确认要删除
-            window.location.href = "/MarkDown/" + id;
-
+          doMarkDown :function(item){
+            var refId ='';
+            if(item.mdId != 0){
+              refId =item.mdId;
+            }
+            window.location.href = "/MarkDown/Project/" + item.projectId+"/"+refId;
           },
           delPro : function(item){
             //TODO:  这里要加删除的询问
