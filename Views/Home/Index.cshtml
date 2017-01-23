@@ -64,13 +64,20 @@
 var mainVue =new Vue({
     el:'#main',
     data:{
-
+        mainData :[]
     },
     methods : {
-
+        searchContent : function(){
+            this.$http.get('/Project/API/').then(response => {
+                this.mainData = response.data;
+                console.log(this.mainData);
+            }, rep => {
+                console.log('失败')
+            });
+        }
     },
     created : function(){
-
+        this.searchContent();
     }
 })
 

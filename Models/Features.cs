@@ -23,6 +23,6 @@ namespace WebApplication.Models
 		public virtual List<FeaturesDepend> featuresDepends {get;set;}
 
 		[JsonIgnore]
-        public  Project project { get; set; }
+        public virtual Project project { get; set; }
     }
 }

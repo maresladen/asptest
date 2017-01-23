@@ -92,7 +92,8 @@ namespace WebApplication.Data
                     .HasColumnName("projectId")
                     .HasColumnType("int(11)");
 
-                
+                entity.HasOne(e => e.project)
+                    .WithMany(p => p.lstfeatures);
             });
 
             builder.Entity<FeaturesDepend>(entity =>

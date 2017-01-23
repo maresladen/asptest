@@ -276,10 +276,22 @@ namespace WebApplication.Controllers
 
 #region API接口,未开始
 
-        [HttpGet]
-        [RouteAttribute("/API/Project/{id?}")]
+        [HttpGetAttribute]
+        [RouteAttribute("/Project/API/{id?}")]
         public IActionResult ApiGet(int id){
-            return Json("ok");
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                List<Project> prodata = new List<Project>();
+                if (id == 0)
+                {
+                    prodata = dbcon.Projects.Include(p => p.lstfeatures).ToList();
+                }
+                else
+                {
+                    prodata = dbcon.Projects.Where(p => p.projectId == id).Include(p => p.lstfeatures).ToList();
+                }
+                return Json(prodata);
+            }
         }
 
 
