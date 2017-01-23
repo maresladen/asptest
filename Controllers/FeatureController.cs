@@ -122,7 +122,9 @@ namespace WebApplication.Controllers
                 {
                     dbcon.Features.Attach(FeatureEntity);
                     dbcon.Entry(FeatureEntity).State = EntityState.Modified;
-                    dbcon.Entry(FeatureEntity).Property(x => x.featuresName).IsModified = false;
+                    dbcon.Entry(FeatureEntity).Property(x => x.featuresHtml).IsModified = false;
+                    dbcon.Entry(FeatureEntity).Property(x => x.featuresScript).IsModified = false;
+                    dbcon.Entry(FeatureEntity).Property(x => x.featuresCss).IsModified = false;
 
                     //考虑到性能，ef的批量删除性能太差，暂时用明文sql写，也可以使用ef utility工具，以后再做尝试
                     string strDel = string.Format("delete from FeaturesDepend where featuresId ={0};", FeatureEntity.featuresId);
@@ -178,14 +180,101 @@ namespace WebApplication.Controllers
 
 #region HTML编辑器获取
         [HttpGetAttribute]
-        [RouteAttribute("/Feature/HTML/{id?}")]
+        [RouteAttribute("/Feature/HTML/{fid}")]
         public IActionResult HtmlEdit(int fid)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
                 Features entity = dbcon.Features.Where(f => f.featuresId == fid).FirstOrDefault();
+                //TODO: 如果没有查到对象,返回到前台会报错,这里需要做个非空处理,跳转到异常的页面
                 return View(entity);
             }
+        }
+
+#endregion
+
+
+#region 获取依赖项内容
+
+
+        [HttpGetAttribute]
+        [RouteAttribute("/Feature/Depends/{fEntity?}")]
+        public IActionResult GetDepends(Features fEntity){
+            Dictionary<string, List<FeatureDepModel>> dict = new Dictionary<string, List<FeatureDepModel>>();
+            //  dictModel =new List<FeatureDepModel>();
+
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                //获取功能点依赖项目列表
+                List<FeaturesDepend> fDepList = dbcon.FeaturesDepends.Where(d => d.featuresId == fEntity.featuresId).ToList();
+                //获取功能块依赖屏蔽列表
+                List<FeaIgnoreProDepend> depIgnoreList =  dbcon.FeaIgnoreProDepends.Where(d => d.featuresId == fEntity.featuresId).ToList();
+                //获取功能块依赖列表
+                List<ProjectDepend> pDepList = dbcon.ProjectDepends.Where(d => d.projectId == fEntity.projectId).ToList();
+
+                dict.Add("javascript",new List<FeatureDepModel>());
+                dict.Add("css",new List<FeatureDepModel>());
+                foreach(ProjectDepend pd in pDepList){
+
+                    if(depIgnoreList.Where(d => d.projectDependid == pd.dependId).Count() == 0){
+
+                        if(pd.filePath ==null || pd.fileName ==null){
+                            continue;
+                        }
+                        FeatureDepModel tempEntity = new FeatureDepModel();
+                        tempEntity.depSrc =pd.filePath;
+                        tempEntity.depName =pd.fileName;
+                        if(!dict[pd.fileType].Contains(tempEntity)){
+                            dict[pd.fileType].Add(tempEntity);
+                        }
+                    }
+                }
+
+                foreach (FeaturesDepend fd in fDepList)
+                {
+                    if (fd.filePath == null || fd.fileName == null)
+                    {
+                        continue;
+                    }
+                    FeatureDepModel tempEntity = new FeatureDepModel();
+                    tempEntity.depSrc = fd.filePath;
+                    tempEntity.depName = fd.fileName;
+                    if (!dict[fd.fileType].Contains(tempEntity))
+                    {
+                        dict[fd.fileType].Add(tempEntity);
+                    }
+                }
+            }
+            return Json(dict);
+        }
+
+#endregion
+
+#region HTML代码保存
+
+        [HttpPut]
+        [Route("/Feature/HTML/{FeatureEntity?}")]
+        public IActionResult HTMLPut(Features FeatureEntity)
+        {
+
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                try
+                {
+                    dbcon.Features.Attach(FeatureEntity);
+                    dbcon.Entry(FeatureEntity).State = EntityState.Unchanged;
+                    dbcon.Entry(FeatureEntity).Property(x => x.featuresHtml).IsModified = true;
+                    dbcon.Entry(FeatureEntity).Property(x => x.featuresScript).IsModified = true;
+                    dbcon.Entry(FeatureEntity).Property(x => x.featuresCss).IsModified = true;
+                    
+                    dbcon.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    return Json("faild");
+                }
+            }
+            return Json("successs");
         }
 
 #endregion

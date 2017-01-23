@@ -77,7 +77,7 @@ namespace WebApplication.Controllers
                 //更新部分字段
                 dbcon.Employees.Attach(eEntity);
                 // dbcon.Entry(eEntity).Property(x => x.LastName).IsModified =true;
-                // dbcon.Entry(eEntity).State = EntityState.Modified;
+                // dbcon.Entry(eEntity).State = EntityState.Unchanged;
 
                 //更新部分字段的另一种方式
                 dbcon.Entry(eEntity).State = EntityState.Modified;

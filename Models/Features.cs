@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace WebApplication.Models
 {
@@ -19,6 +20,9 @@ namespace WebApplication.Models
 		public string featuresCss { get; set; }
 
         public int mdId { get; set; }
-		public virtual ICollection<FeaturesDepend> featuresDepends {get;set;}
+		public virtual List<FeaturesDepend> featuresDepends {get;set;}
+
+		[JsonIgnore]
+        public  Project project { get; set; }
     }
 }

@@ -16,6 +16,8 @@ namespace WebApplication.Models
 		public string projectName { get; set; }
         public int mdId { get; set; }
 		public virtual List<ProjectDepend> projectDepends { get; set; }
+
+        public virtual List<Features> lstfeatures {get;set;}
     }
 
 }

@@ -1,7 +1,5 @@
  @model WebApplication.Models.Features
 
-
-
     <!-- load ace -->
     <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <link rel="stylesheet" href="~/css/Tiny-editor.css"/>
@@ -15,51 +13,86 @@
         <li onclick="Tiny.tab(3)">JavaScript</li>
         <li onclick="Tiny.tab(4);Tiny.run()" id="resultTab">Result</li>
     </ul>
-    <a class="run button" onclick="Tiny.run()">Run</a>
-    <a class="save button" onclick="Tiny.save()">Save</a>
-    <a class="full button" onclick="Tiny.fullScreen()">Full-Screen</a>
+
+
+    <a class="run button"  onclick="Tiny.run()">Run</a>
+    <!--Tiny.save()方法是一个浏览器缓存方法,先替换,看以后是否需要-->
+    <a class="save button" onclick="htmlSave()">Save</a>
+    <!--<a class="full button" onclick="Tiny.fullScreen()">Full-Screen</a>-->
     <a class="dock button" onclick="Tiny.dockMode()" id="dockButton">Dock-Mode</a>
     <a class="live button hide" onclick="Tiny.liveMode()" id="liveButton">live-Mode</a>
     <div class="tabContainer">
        <pre id='html' style="font-size: 16px;">
-&lt;h1&gt;
-    Hello~
-&lt;/h1&gt;
+            @Model.featuresHtml
         </pre>
     </div>
 
     <div class="tabContainer">
         <pre id= 'css' style="font-size: 16px;">
-h1{
-    color:red;
-}
+            @Model.featuresCss
         </pre>
     </div>
 
 
     <div class="tabContainer">
         <pre id='js' style="font-size: 16px;">
-
-document.getElementsByTagName('h1')[0].innerHTML='Hello World!'
-
+            @Model.featuresScript
         </pre>
 
     </div>
     <div class="tabContainer" id="dockIframe">
         <div class="split-line" id="splitLine"></div>
         <iframe class="iframe" id="iframe" sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals" name="iframe" frameborder="0">
-            <script src="jquery-3.1.1.min.js"></script>
         </iframe>
     </div>
+    <div id ="hidendiv" style="display: none"></div>
 </div>
 
-
-
-
-<script src="~/js/ace.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" src="~/js/Tiny-editor.js"></script>
+<script src="~/js/tiny/ace.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="~/js/tiny/Tiny-editor.js"></script>
 <script>
+
+   var editVue = new Vue({
+       el:'#hidendiv',
+       data:{
+           modelData : @Json.Serialize(Model),
+           feaDepends : {}
+       },
+       methods :{
+           getDepends: function () {
+           this.$http.get('/Feature/Depends/',{params : {featuresId: this.modelData.featuresId,projectId:this.modelData.projectId}} ).then(response => {
+                   this.feaDepends=response.data;
+               }, rep => {
+                   console.log('失败')
+               });
+           },
+           saveResult :function(){
+               var tempForm = new FormData();
+               tempForm.append("featuresId",this.modelData.featuresId);
+               tempForm.append("featuresHtml",buffer.htmlEditor.getValue())
+               tempForm.append("featuresScript",buffer.jsEditor.getValue())
+               tempForm.append("featuresCss",buffer.cssEditor.getValue())
+               this.$http.put('/Feature/HTML/',tempForm,{emulateJSON:true}).then(response => {
+                    console.log(response.data);
+               }, rep => {
+                   console.log('失败')
+               });
+
+           }
+        },
+        created :function(){
+            this.getDepends();
+        }
+    })
+
     var Tiny = new TinyEditor('Tiny-container',{
         index : 2
     })
+
+
+    function htmlSave(){
+        editVue.saveResult();
+    }
+
 </script>
+
