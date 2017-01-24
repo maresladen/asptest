@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "主页";
 }
+ @model List<WebApplication.Models.Project>
 
 <!--<body class="docs">-->
 
@@ -11,9 +12,9 @@
     <link rel="stylesheet" href="~/css/md-display.css"/>
     <script src="~/js/dist/Chart.min.js" charset="utf-8"></script>
 
-<style>
+<!--<style>
     .hljs{display:block;overflow-x:auto;padding:.5em;color:#abb2bf;background:#282c34}.hljs-comment,.hljs-quote{color:#5c6370;font-style:italic}.hljs-doctag,.hljs-formula,.hljs-keyword{color:#c678dd}.hljs-deletion,.hljs-name,.hljs-section,.hljs-selector-tag,.hljs-subst{color:#e06c75}.hljs-literal{color:#56b6c2}.hljs-addition,.hljs-attribute,.hljs-meta-string,.hljs-regexp,.hljs-string{color:#98c379}.hljs-built_in,.hljs-class .hljs-title{color:#e6c07b}.hljs-attr,.hljs-number,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-pseudo,.hljs-template-variable,.hljs-type,.hljs-variable{color:#d19a66}.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-symbol,.hljs-title{color:#61aeee}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}.hljs-link{text-decoration:underline}
-</style>
+</style>-->
 
 
 
@@ -24,33 +25,31 @@
 <div id="main" class="fix-sidebar">
     <div class="sidebar">
         <div class="list">
-            <ul class="menu-root">
+                <h3>功能块</h3>
+            <ul class="menu-root" v-for="item in mainData">
                 <li>
-                    <h3>PC前台</h3>
+                    <a href="javascript:void(0);" v-on:click="getMarkDown(item.mdId)" class="sidebar-link">{{item.projectName}}</a>
+                    <ul class="menu-sub" v-for="fitem in item.lstfeatures">
+                        <!--这是一个锚点,考虑如何操作-->
+                        <!--data-scroll="" href="#构造器"-->
+                        <li><a href="javascript:void(0);" class="section-link" v-on:click="getMarkDown(fitem.mdId)">{{fitem.featuresName}}</a></li>
+                    </ul>
                 </li>
-                <li>
-                    <a href="javascript:void(0);" onclick="console.log(123)" class="sidebar-link">测试功能1</a>
-                </li>
-                <li>
-                    <a href="javascript:void(0);" class="sidebar-link">测试功能2</a>
-                </li>
-                <li>
-                    <h3>PC后台</h3>
-                </li>
-                <li>
-                    <a href="javascript:void(0);" class="sidebar-link">测试功能3</a>
-                </li>
-                <li>
-                    <a href="javascript:void(0);" class="sidebar-link">测试功能4</a>
-                </li>
-            </ul>
         </div>
     </div>
 
 
-    <div id="MarkDowndiv" class="content guide with-sidebar installation-guide">
+    <div id="MarkDowndiv" class="content guide with-sidebar installation-guide" style="padding-top: 50px">
 
-
+        <div v-html ="HTMLData.mdHTML">
+            你来到没有知识的荒野
+        </div>
+        <hr />
+        <div class="col-md-12">
+        <footer>
+            <p>&copy; 2016 - 前端Demo</p>
+        </footer>
+        </div>
     </div>
 
 </div>
@@ -64,35 +63,21 @@
 var mainVue =new Vue({
     el:'#main',
     data:{
-        mainData :[]
+        mainData :@Json.Serialize(Model),
+        HTMLData :{mdHTML :''} 
     },
     methods : {
-        searchContent : function(){
-            this.$http.get('/Project/API/').then(response => {
-                this.mainData = response.data;
-                console.log(this.mainData);
-            }, rep => {
-                console.log('失败')
-            });
-        }
-    },
-    created : function(){
-        this.searchContent();
-    }
-})
-
-
-////这里做图标的解析
-   var markdownVue = new Vue({
-
-      el:"#MarkDowndiv",
-      data :{
-        testData :''
-      },
-      methods:{
-        bindHTML : function(htmlData){
-          this.testData =htmlData;
-            this.$nextTick(function(){
+        // searchContent : function(){
+        //     this.$http.get('/Project/API/').then(response => {
+        //         this.mainData = response.data;
+        //     }, rep => {
+        //         console.log('失败')
+        //     });
+        // },
+        getMarkDown :function(mid){
+            this.$http.get('/API/MarkDown/',{params : {id: mid}}).then(response => {
+                this.HTMLData =response.data;
+              this.$nextTick(function(){
               $(".chartjs").each(function () {
                 try {
                     new Chart($(this), JSON.parse($(this).text()))
@@ -103,9 +88,41 @@ var mainVue =new Vue({
              
               });
             })
-            
-        }
-      }
+            }, rep => {
+                console.log('失败')
+            });
 
-    })
+        }
+    },
+    created : function(){
+        // this.searchContent();
+    }
+})
+
+
+// ////这里做图标的解析
+//    var markdownVue = new Vue({
+//       el:"#MarkDowndiv",
+//       data :{
+//         HTMLData :{}
+//       },
+//       methods:{
+//         bindHTML : function(htmlData){
+//           this.HTMLData =htmlData;
+//             this.$nextTick(function(){
+//               $(".chartjs").each(function () {
+//                 try {
+//                     new Chart($(this), JSON.parse($(this).text()))
+//                 }
+//                 catch (e) {
+//                   $(this).replaceWith('<pre>Chart.js complains: "' + e + '"</pre>')
+//                 }
+             
+//               });
+//             })
+            
+//         }
+//       }
+
+//     })
 </script>

@@ -24,7 +24,7 @@
         <script src="~/js/bootstrap.min.js"></script>
         <script src="~/js/vue.js"></script>
         <script src="~/js/vue-resource.js"></script>
-
+        <script src="~/js/app.js"></script>
 
 
 </head>
@@ -45,7 +45,7 @@
                     <li><a asp-controller="Home" asp-action="Index">主页</a></li>
                     <li><a asp-controller="Project">功能块管理</a></li>
                     <li><a asp-controller="Home" asp-action="Contact">权限分配</a></li>
-                    <li><a asp-controller="MarkDown" asp-action="-1">关于MardDown</a></li>
+                    <li><a asp-controller="HELP" asp-action="MarkDown">关于MardDown</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -53,12 +53,15 @@
     </div>
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <div class="col-md-12">
-        <footer>
-            <p>&copy; 2016 - 前端Demo</p>
-        </footer>
-        </div>
+        @if(ViewData["Title"] != "主页")
+        {
+            <hr />
+            <div class="col-md-12">
+            <footer>
+                <p>&copy; 2016 - 前端Demo</p>
+            </footer>
+            </div>
+        }
     </div>
 
     <!--<environment names="Development">

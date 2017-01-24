@@ -39,13 +39,13 @@ namespace WebApplication.Controllers
         [HttpGetAttribute]
         [RouteAttribute("/Project/{id?}")]
         //就是一个注解
-        public IActionResult Manage(int id)
+        public IActionResult Manage(int? id)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption)){
                 
                 // List<Project> prodata = dbcon.Projects.Include(p => p.projectDepends).ToList();
                 List<Project> prodata =new List<Project>();
-                if (id == 0)
+                if (id == null)
                 {
                     prodata = dbcon.Projects.Include(p => p.projectDepends).ToList();                }
                 else
@@ -278,11 +278,12 @@ namespace WebApplication.Controllers
 
         [HttpGetAttribute]
         [RouteAttribute("/Project/API/{id?}")]
-        public IActionResult ApiGet(int id){
+        [AllowAnonymous]
+        public IActionResult ApiGet(int? id){
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
                 List<Project> prodata = new List<Project>();
-                if (id == 0)
+                if (id == null)
                 {
                     prodata = dbcon.Projects.Include(p => p.lstfeatures).ToList();
                 }

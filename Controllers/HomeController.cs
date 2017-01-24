@@ -95,7 +95,12 @@ namespace WebApplication.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                List<Project> prodata = new List<Project>();
+                prodata = dbcon.Projects.Include(p => p.lstfeatures).ToList();
+                return View(prodata);
+            }
         }
 
         public IActionResult About()

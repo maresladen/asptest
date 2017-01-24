@@ -65,7 +65,7 @@ T3: 2014-01-02, 9d"></i>
           <i title="Preferences" class="fa fa-cog" data-remodal-target="preferences-modal"></i>
           <i title="Help" class="fa fa-question-circle" data-remodal-target="help-modal"></i>
           <i title="About" class="fa fa-info-circle" data-remodal-target="about-modal"></i>
-          <i title="Save" class="fa fa-save" onclick="mdSave()"></i>
+          <i id ="btnSave" title="Save" class="fa fa-save" onclick="mdSave()"></i>
         </div>
       </div>
       <div class="ui-layout-center">
@@ -163,10 +163,39 @@ T3: 2014-01-02, 9d"></i>
 
     </div>
 
+
+ @if (ViewData["HELP"] == "TRUE"){
+
     <script>
-      $(function () {
-        editor.session.setValue(translatenbsp(), -1);
-      });
+  $('#btnSave').css('display','none')
+    $(function() {
+  $.get('../mdSource/sample.md', function(data) { // load sample text
+    editor.session.setValue(data, -1);
+    setTimeout(function() {
+      window.addEventListener("hashchange", function() {
+        $('.ui-layout-east').scrollTop($('.ui-layout-east').scrollTop() - 6);
+      }); // a little gap to top
+      if(window.location.hash.length > 0) {
+        $('.ui-layout-east').scrollTop($(window.location.hash).offset().top - 30); // scroll to hash element
+      }
+    }, 1000);
+  });
+});
+    </script>
+
+
+ }
+ else{
+    <script>
+     $(function() {
+        editor.session.setValue( translatenbsp(), -1);
+     });
+
+    </script>
+ }
+
+    <script>
+
 
      function translatenbsp() {
        var a = '@Model.MdText'
@@ -216,8 +245,6 @@ T3: 2014-01-02, 9d"></i>
         });
 
        }
-
-        
      }
 
 

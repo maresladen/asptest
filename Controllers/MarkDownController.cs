@@ -41,8 +41,8 @@ namespace WebApplication.Controllers
 #region markDown获取
 
         [HttpGetAttribute]
-        [RouteAttribute("/{pfType}/{pfid}/MarkDown/{id?}")]
-        public IActionResult MarkDown(string pfType, int pfid, int id)
+        [RouteAttribute("/Project/{pfid}/MarkDown/{id?}")]
+        public IActionResult PMarkDown(int pfid, int id)
         {
             MarkDown mdEntity;
 
@@ -50,17 +50,45 @@ namespace WebApplication.Controllers
             {
                 mdEntity = dbcon.MarkDowns.Where(d => d.MdId == id).FirstOrDefault();
             }
-            ViewData["pfType"] =  pfType;
+            ViewData["pfType"] =  strProject;
             ViewData["pfId"] =  pfid;
             if(mdEntity == null){
                 mdEntity =new MarkDown();
                 mdEntity.MdText="";
                 mdEntity.MdHTML="";
             }
-            return View(mdEntity);
+            return View("MarkDown",mdEntity);
         }
 
-        #endregion
+        [HttpGetAttribute]
+        [RouteAttribute("/Feature/{pfid}/MarkDown/{id?}")]
+        public IActionResult FMarkDown(int pfid, int id)
+        {
+            MarkDown mdEntity;
+
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                mdEntity = dbcon.MarkDowns.Where(d => d.MdId == id).FirstOrDefault();
+            }
+            ViewData["pfType"] =  strFeature;
+            ViewData["pfId"] =  pfid;
+            if(mdEntity == null){
+                mdEntity =new MarkDown();
+                mdEntity.MdText="";
+                mdEntity.MdHTML="";
+            }
+            return View("MarkDown",mdEntity);
+        }
+
+        [HttpGetAttribute]
+        [RouteAttribute("/HELP/MarkDown")]
+        public IActionResult MarkDownHelp(int pfid, int id)
+        {
+            ViewData["HELP"] =  "TRUE";
+            return View("MarkDown",new MarkDown());
+        }
+
+#endregion
 
 #region markDown新增
 
@@ -146,7 +174,25 @@ namespace WebApplication.Controllers
 
         #region API接口,未开始
 
+        [HttpGetAttribute]
+        [RouteAttribute("/API/MarkDown/{id?}")]
+        [AllowAnonymousAttribute]
+        public IActionResult JsonMarkDown(int id)
+        {
+            MarkDown mdEntity;
 
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                mdEntity = dbcon.MarkDowns.Where(d => d.MdId == id).FirstOrDefault();
+                mdEntity.MdText ="";
+            }
+            if(mdEntity == null){
+                mdEntity =new MarkDown();
+                mdEntity.MdText="";
+                mdEntity.MdHTML="";
+            }
+            return Json(mdEntity);
+        }
 
         #endregion
 
