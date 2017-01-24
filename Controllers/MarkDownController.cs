@@ -82,6 +82,7 @@ namespace WebApplication.Controllers
 
         [HttpGetAttribute]
         [RouteAttribute("/HELP/MarkDown")]
+        [AllowAnonymousAttribute]
         public IActionResult MarkDownHelp(int pfid, int id)
         {
             ViewData["HELP"] =  "TRUE";
