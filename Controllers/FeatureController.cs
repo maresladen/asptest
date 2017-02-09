@@ -38,9 +38,14 @@ namespace WebApplication.Controllers
 
 #region 功能点获取
 
+        /// <summary>
+        /// 获取功能点
+        /// </summary>
+        /// <param name="projectId">功能块ID</param>
+        /// <param name="id">功能点ID</param>
+        /// <returns></returns>
         [HttpGetAttribute]
         [RouteAttribute("/Project/{projectId}/Feature/{id?}")]
-        //就是一个注解
         public IActionResult FManage(int projectId, int id)
         {
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
@@ -212,8 +217,8 @@ namespace WebApplication.Controllers
                 //获取功能块依赖列表
                 List<ProjectDepend> pDepList = dbcon.ProjectDepends.Where(d => d.projectId == fEntity.projectId).ToList();
 
-                dict.Add("javascript",new List<FeatureDepModel>());
-                dict.Add("css",new List<FeatureDepModel>());
+                dict.Add("text/javascript",new List<FeatureDepModel>());
+                dict.Add("text/css",new List<FeatureDepModel>());
                 foreach(ProjectDepend pd in pDepList){
 
                     if(depIgnoreList.Where(d => d.projectDependid == pd.dependId).Count() == 0){

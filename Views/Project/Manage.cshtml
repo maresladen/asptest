@@ -106,10 +106,10 @@ hehe
             cssVue.cssData.splice(0,cssVue.cssData.length);
             for(var i in item.projectDepends){
               var pd =item.projectDepends[i];
-              if(pd.fileType == 'javascript'){
+              if(pd.fileType == 'text/javascript'){
                 jsVue.jsData.push({ name: pd.fileName, show: true });
               }
-              else if(pd.fileType == 'css'){
+              else if(pd.fileType == 'text/css'){
                 cssVue.cssData.push({ name: pd.fileName, show: true });
               }
             }

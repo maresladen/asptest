@@ -152,20 +152,18 @@ th,td{
             var fileList = e.dataTransfer.files; //获取文件对象
             for (var i = 0; i < fileList.length; i++) {
 
-                //检测是否是拖拽文件到页面的操作
-                if (fileList.length == 0) {
-                    return;
-                }
+
+                var tempFile = fileList[i];
                 //检测文件是不是css和js
-                if (fileList[i].type.indexOf('javascript') === -1) {
-                    console.log(fileList[i].type);
+                if (tempFile.type.indexOf('javascript') === -1) {
+                    console.log(tempFile.type);
                     modalmodalV.alert("警告！", "仅允许上传js文件!");
                     return;
                 }
 
                 //拖拉文件到浏览器
-                var filename = fileList[i].name; //文件名称
-                var filesize = Math.floor((fileList[i].size) / 10240);
+                var filename = tempFile.name; //文件名称
+                var filesize = Math.floor((tempFile.size) / 10240);
                 if (filesize > 10240) {
                     modalmodalV.alert("警告！", "单个文件大小不允许超过10兆!");
                     return;
@@ -183,9 +181,8 @@ th,td{
                         }
                     }
                     if(noAppend){
-                        var jsfile = { name: filename, show: true };
+                        var jsfile = { name: filename, show: true,file:tempFile};
                         jsVue.jsData.push(jsfile)
-                        // TODO:  增加文件服务器的上传
                     }
                 }
             }
@@ -198,21 +195,18 @@ th,td{
             var fileList = e.dataTransfer.files; //获取文件对象
             for (var i = 0; i < fileList.length; i++) {
 
-                //检测是否是拖拽文件到页面的操作
-                if (fileList.length == 0) {
-                    return;
-                }
+                var tempFile = fileList[i];
                 //检测文件是不是css和js
-                if (fileList[i].type.indexOf('css') === -1) {
-                    console.log(fileList[i].type);
+                if (tempFile.type.indexOf('css') === -1) {
+                    console.log(tempFile.type);
                     modalmodalV.alert(modalmodalV.msgTypeEnmu.warn, "仅允许上传css文件！");
                     return;
                 }
 
                 //拖拉文件到浏览器
                 // var img = window.URL.createObjectURL(fileList[i]);
-                var filename = fileList[i].name; //文件名称
-                var filesize = Math.floor((fileList[i].size) / 10240);
+                var filename = tempFile.name; //文件名称
+                var filesize = Math.floor((tempFile.size) / 10240);
                 if (filesize > 10240) {
                     modalmodalV.alert(modalmodalV.msgTypeEnmu.warn, "单个文件大小不允许超过10兆!");
                     return;
@@ -230,9 +224,8 @@ th,td{
                         }
                     }
                     if (noAppend) {
-                        var cssfile = { name: filename, show: true };
+                        var cssfile = { name: filename, show: true,file:tempFile};
                         cssVue.cssData.push(cssfile)
-                        // TODO:  增加文件服务器的上传
                     }
                 }
             }
@@ -332,33 +325,41 @@ th,td{
                 // proEntity.projectName =this.proEntity.proName;
                 // proEntity.projectId =2;
                 // proEntity.projectMarkDown = $('#wmd-preview').html();
-                var depList = [];
+
+                var fileForm = new FormData();
+
 
                 for(var i =0;i<jsVue.jsData.length;i++){
                     if(jsVue.jsData[i].show){
-                        depList.push({ fileName: jsVue.jsData[i].name, fileType: 'javascript' });
+                         fileForm.append(jsVue.jsData[i].name,jsVue.jsData[i].file)
                     }
                 }
                 for(var i =0;i<cssVue.cssData.length;i++){
                     if (cssVue.cssData[i].show) {
-                        depList.push({ fileName: cssVue.cssData[i].name, fileType: 'css' });
+                         fileForm.append(cssVue.cssData[i].name,cssVue.cssData[i].file)
                     }
                 }
 
 
-                var subData ={};
-                subData.proEntity = this.proEntity;
-                subData.proDepLst = depList;
+
+                fileForm.append('proId',this.proEntity.projectId);
+                fileForm.append('proName',this.proEntity.projectName);
 
                 if(this.proEntity.projectId == 0){
-                    this.$http.post('/Project', JSON.stringify(subData), { emulateJSON: true }).then(response => {
-                        console.log(response.data)
-                    }, rep => {
+                    // this.$http.post('/Project', JSON.stringify(subData), { emulateJSON: true }).then(response => {
+                    //     console.log(response.data)
+                    // }, rep => {
+                    //     console.log('失败')
+                    // });
+                    this.$http.post('/Project',fileForm).then(rep => {
+
+                        console.log(rep.data);
+                    },rep => {
                         console.log('失败')
-                    });
+                    })
                 }
                 else{
-                    this.$http.put('/Project', JSON.stringify(subData), { emulateJSON: true }).then(response => {
+                    this.$http.put('/Project', fileForm).then(response => {
                         console.log(response.data)
                     }, rep => {
                         console.log('失败')

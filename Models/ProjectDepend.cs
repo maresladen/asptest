@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -18,8 +19,8 @@ namespace WebApplication.Models
 		public string fileType { get; set; }
 		public string fileMarkdown { get; set; }
 
-		//忽略循环引用
-		[JsonIgnore]
+        //忽略循环引用
+        [JsonIgnore]
         public  Project project { get; set; }
     }
 }
