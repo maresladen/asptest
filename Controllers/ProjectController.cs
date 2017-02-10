@@ -314,7 +314,7 @@ namespace WebApplication.Controllers
 #region API接口,未开始
 
         [HttpGetAttribute]
-        [RouteAttribute("/Project/API/{id?}")]
+        [RouteAttribute("/API/Project/{id?}")]
         [AllowAnonymous]
         public IActionResult ApiGet(int? id){
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))

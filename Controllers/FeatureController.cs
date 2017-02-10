@@ -289,7 +289,7 @@ namespace WebApplication.Controllers
 #region API接口,未开始
 
         [HttpGet]
-        [RouteAttribute("/API/Project/{id?}")]
+        [RouteAttribute("/API/Feature/{id?}")]
         public IActionResult ApiGet(int id)
         {
             return Json("ok");
