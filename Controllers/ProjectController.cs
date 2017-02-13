@@ -117,6 +117,57 @@ namespace WebApplication.Controllers
         //     //这里应该把重新封装json然后返回回去
         //     return Json("successs");
         // }
+
+           [RouteAttribute("/Project")]
+        [HttpPostAttribute]
+        public IActionResult PostFile([FromFormAttribute]IFormCollection theForm)
+        {
+            var files = theForm.Files;
+            Project proEntity = new Project();
+            proEntity.projectName = theForm["proName"];
+            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+            {
+                dbcon.Database.BeginTransaction();
+                try
+                {
+                    dbcon.Projects.Add(proEntity);
+                    dbcon.SaveChanges();
+                    string savePath = Path.Combine(_env.ContentRootPath, "wwwroot/uponloads/Project/" + proEntity.projectId.ToString());
+                    if(!Directory.Exists(savePath)){
+                        Directory.CreateDirectory(savePath);
+                    }
+                    foreach (var file in files)
+                    {
+                        var fileType = file.ContentType;
+                        var fileName = file.FileName;
+                        var guidName = Guid.NewGuid().ToString() + (fileType == "text/javascript" ? ".js" : ".css");
+                        using (var stream = new FileStream( Path.Combine(savePath ,guidName), FileMode.CreateNew))
+                        {
+                            file.CopyTo(stream);
+                            stream.Flush();
+                        }
+                       ProjectDepend  ent =new ProjectDepend();
+                        ent.projectId = proEntity.projectId;
+                        ent.fileName =fileName;
+                        ent.filePath = upPath +proEntity.projectId.ToString() +"/" + guidName;
+                        ent.fileType = fileType;
+                        dbcon.ProjectDepends.Add(ent);
+
+                    }
+                    dbcon.SaveChanges();
+                    dbcon.Database.CommitTransaction();
+                }
+                catch (Exception)
+                {
+                    dbcon.Database.RollbackTransaction();
+                    return Json("faild");
+                }
+            }
+
+            //这里应该把重新封装json然后返回回去
+            return Json("successs");
+
+        }
 #endregion
 
 #region 功能块修改
@@ -334,56 +385,7 @@ namespace WebApplication.Controllers
 
 
 
-        [RouteAttribute("/Project")]
-        [HttpPostAttribute]
-        public IActionResult PostFile([FromFormAttribute]IFormCollection theForm)
-        {
-            var files = theForm.Files;
-            Project proEntity = new Project();
-            proEntity.projectName = theForm["proName"];
-            using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
-            {
-                dbcon.Database.BeginTransaction();
-                try
-                {
-                    dbcon.Projects.Add(proEntity);
-                    dbcon.SaveChanges();
-                    string savePath = Path.Combine(_env.ContentRootPath, "wwwroot/uponloads/Project/" + proEntity.projectId.ToString());
-                    if(!Directory.Exists(savePath)){
-                        Directory.CreateDirectory(savePath);
-                    }
-                    foreach (var file in files)
-                    {
-                        var fileType = file.ContentType;
-                        var fileName = file.FileName;
-                        var guidName = Guid.NewGuid().ToString() + (fileType == "text/javascript" ? ".js" : ".css");
-                        using (var stream = new FileStream( Path.Combine(savePath ,guidName), FileMode.CreateNew))
-                        {
-                            file.CopyTo(stream);
-                            stream.Flush();
-                        }
-                       ProjectDepend  ent =new ProjectDepend();
-                        ent.projectId = proEntity.projectId;
-                        ent.fileName =fileName;
-                        ent.filePath = upPath +proEntity.projectId.ToString() +"/" + guidName;
-                        ent.fileType = fileType;
-                        dbcon.ProjectDepends.Add(ent);
-
-                    }
-                    dbcon.SaveChanges();
-                    dbcon.Database.CommitTransaction();
-                }
-                catch (Exception)
-                {
-                    dbcon.Database.RollbackTransaction();
-                    return Json("faild");
-                }
-            }
-
-            //这里应该把重新封装json然后返回回去
-            return Json("successs");
-
-        }
+     
 
 #endregion
    }
