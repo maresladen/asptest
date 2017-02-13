@@ -181,7 +181,8 @@ namespace WebApplication.Data
                     .HasColumnName("projectId")
                     .HasColumnType("int(11)");
 
-                    
+                // entity.Ignore(e => e.depFile);
+
                 entity.HasOne(e => e.project)
                     .WithMany(p => p.projectDepends);
 

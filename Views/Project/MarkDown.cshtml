@@ -3,6 +3,7 @@
 }
  @model WebApplication.Models.Project
 
+<!--弃用-->
     <link rel="stylesheet" href="~/css/markdown-plus.min.css"/>
     <script src="~/js/dist/markdown-plus.min.js" charset="utf-8"></script>
 
@@ -215,20 +216,32 @@ T3: 2014-01-02, 9d"></i>
 
      function mdSave() {
 
-       var proEntity ={}
-       proEntity.projectId = '@Model.projectId';
-       proEntity.projectMdText = editor.getValue();
-       proEntity.projectMarkDown =$('#preview').html(); 
+       var mdEntity ={}
+       mdEntity.mdText = editor.getValue();
+       mdEntity.mdHTML =$('#preview').html(); 
+       mdEntity.mdId ='@Model.mdId';
+       var jsonData = {mdEntity:mdEntity,strtype:'Project',typeId :'@Model.projectId'}
+       if(mdEntity.mdId ==null || mdEntity.mdId ==0){
         $.ajax({
           url: '/MarkDown',
-          type: 'put',
-          data: proEntity,
+          type: 'post',
+          data: jsonData,
           success:function(data){
             $('[data-remodal-id=save-modal]').remodal().open()
             console.log(data);
           }
         });
-
+       }else{
+        $.ajax({
+          url: '/MarkDown',
+          type: 'put',
+          data: mdEntity,
+          success:function(data){
+            $('[data-remodal-id=save-modal]').remodal().open()
+            console.log(data);
+          }
+        });
+       }
         
      }
 

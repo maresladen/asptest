@@ -362,9 +362,9 @@ TinyEditor.prototype = {
 
 		var cssDep ='';
 
-		for(var i =0;i<editVue.feaDepends.css.length;i++){
+		for(var i =0;i<editVue.feaDepends["text/css"].length;i++){
 
-			cssDep += '<link rel="stylesheet" href="'+ editVue.feaDepends.css[i].depSrc +'">\n';
+			cssDep += '<link rel="stylesheet" href="'+ editVue.feaDepends["text/css"][i].depSrc +'">\n';
 		}
 
 
@@ -375,11 +375,11 @@ TinyEditor.prototype = {
 		var sList = oHead.getElementsByTagName('script');
 		if(sList.length == 0){
 			//这里要做动态的添加的，通过API接口请求去获得要引入多少js和css
-			for (var i = 0; i < editVue.feaDepends.javascript.length; i++) {
+			for (var i = 0; i < editVue.feaDepends["text/javascript"].length; i++) {
 				var oScript = iframe.document.createElement("script");
 				oScript.type = "text/javascript";
 				oScript.async = false;
-				loadJS(editVue.feaDepends.javascript[i].depSrc, oHead, oScript, iframe);
+				loadJS(editVue.feaDepends["text/javascript"][i].depSrc, oHead, oScript, iframe);
 			}
 		}
 

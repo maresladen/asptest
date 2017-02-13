@@ -13,6 +13,9 @@ using Newtonsoft.Json.Linq;
 using WebApplication.Data;
 using WebApplication.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApplication.Controllers
 {
@@ -24,12 +27,15 @@ namespace WebApplication.Controllers
     public class ProjectController : Controller
     {
 
+        const string upPath ="http://localhost:5000/uponloads/Project/";
+
         // ApplicationDbContext Dbcon;
         DbContextOptions<ApplicationDbContext> dbconOption;
-
+        IHostingEnvironment _env;
         private readonly SignInManager<ApplicationUser> _signinManager;
-        public ProjectController(IServiceProvider service,SignInManager<ApplicationUser> signinManager)
+        public ProjectController(IHostingEnvironment env,IServiceProvider service,SignInManager<ApplicationUser> signinManager)
         {
+            this._env = env;
             this.dbconOption = service.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
             this._signinManager =signinManager;
         }
@@ -67,40 +73,100 @@ namespace WebApplication.Controllers
         
 #region 功能块新增
 
-        [HttpPost]
-        [Route("/Project/{jsonObj?}")]
-        public IActionResult Post([FromBody]JObject  jsonObj)
+        // [HttpPost]
+        // [Route("/Project/{jsonObj?}")]
+        // public IActionResult Post([FromBodyAttribute]JObject  jsonObj)
+        // {
+        //     dynamic Jsondm = jsonObj;
+
+        //     Project proEntity = Jsondm.proEntity.ToObject<Project>();
+
+        //     ProjectDepend[] proDepLst = Jsondm.proDepLst.ToObject<ProjectDepend[]>();
+
+
+        //     //todo: 接收文件上传,保存到静态文件夹,文件名通过guid生成,guid比较靠谱
+        //     //todo: 将地址赋值给depend的内容,然后保存
+        //     //depFinfo
+        //     //depFile
+
+        //     using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
+        //     {
+        //         dbcon.Database.BeginTransaction(); 
+        //         try{
+        //             dbcon.Projects.Add(proEntity);
+        //             dbcon.SaveChanges();
+        //             if (proDepLst.Length > 0)
+        //             {
+        //                 foreach (ProjectDepend ent in proDepLst)
+        //                 {
+        //                     // var strName =this.saveFiles(ent);
+                            
+        //                     ent.projectId = proEntity.projectId;
+        //                     dbcon.ProjectDepends.Add(ent);
+        //                 }
+        //             }
+        //             dbcon.SaveChanges();
+        //             dbcon.Database.CommitTransaction();
+        //         }
+        //         catch(Exception){
+        //            dbcon.Database.RollbackTransaction(); 
+        //            return Json("faild");
+        //         }
+        //     }
+            
+        //     //这里应该把重新封装json然后返回回去
+        //     return Json("successs");
+        // }
+
+           [RouteAttribute("/Project")]
+        [HttpPostAttribute]
+        public IActionResult PostFile([FromFormAttribute]IFormCollection theForm)
         {
-            dynamic Jsondm = jsonObj;
-
-            Project proEntity = Jsondm.proEntity.ToObject<Project>();
-
-            ProjectDepend[] proDepLst = Jsondm.proDepLst.ToObject<ProjectDepend[]>();
+            var files = theForm.Files;
+            Project proEntity = new Project();
+            proEntity.projectName = theForm["proName"];
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
-                dbcon.Database.BeginTransaction(); 
-                try{
+                dbcon.Database.BeginTransaction();
+                try
+                {
                     dbcon.Projects.Add(proEntity);
                     dbcon.SaveChanges();
-                    if (proDepLst.Length > 0)
+                    string savePath = Path.Combine(_env.ContentRootPath, "wwwroot/uponloads/Project/" + proEntity.projectId.ToString());
+                    if(!Directory.Exists(savePath)){
+                        Directory.CreateDirectory(savePath);
+                    }
+                    foreach (var file in files)
                     {
-                        foreach (ProjectDepend ent in proDepLst)
+                        var fileType = file.ContentType;
+                        var fileName = file.FileName;
+                        var guidName = Guid.NewGuid().ToString() + (fileType == "text/javascript" ? ".js" : ".css");
+                        using (var stream = new FileStream( Path.Combine(savePath ,guidName), FileMode.CreateNew))
                         {
-                            ent.projectId = proEntity.projectId;
-                            dbcon.ProjectDepends.Add(ent);
+                            file.CopyTo(stream);
+                            stream.Flush();
                         }
+                       ProjectDepend  ent =new ProjectDepend();
+                        ent.projectId = proEntity.projectId;
+                        ent.fileName =fileName;
+                        ent.filePath = upPath +proEntity.projectId.ToString() +"/" + guidName;
+                        ent.fileType = fileType;
+                        dbcon.ProjectDepends.Add(ent);
+
                     }
                     dbcon.SaveChanges();
                     dbcon.Database.CommitTransaction();
                 }
-                catch(Exception){
-                   dbcon.Database.RollbackTransaction(); 
-                   return Json("faild");
+                catch (Exception)
+                {
+                    dbcon.Database.RollbackTransaction();
+                    return Json("faild");
                 }
             }
-            
+
             //这里应该把重新封装json然后返回回去
             return Json("successs");
+
         }
 #endregion
 
@@ -108,13 +174,14 @@ namespace WebApplication.Controllers
 
         [HttpPut]
         [Route("/Project/{jsonObj?}")]
-        public IActionResult Put([FromBody]JObject  jsonObj)
+        public IActionResult Put([FromFormAttribute]IFormCollection theForm)
         {
-            dynamic Jsondm = jsonObj;
 
-            Project proEntity = Jsondm.proEntity.ToObject<Project>();
+            Project proEntity =new Project();
+            proEntity.projectId = Convert.ToInt32(theForm["proId"]);
+            proEntity.projectName = theForm["proName"];
 
-            ProjectDepend[] proDepLst = Jsondm.proDepLst.ToObject<ProjectDepend[]>();
+            var files = theForm.Files;
 
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
@@ -128,13 +195,29 @@ namespace WebApplication.Controllers
                     string strDel = string.Format("delete from ProjectDepend where projectId ={0};", proEntity.projectId);
                     dbcon.Database.ExecuteSqlCommand(strDel);
 
-                    if (proDepLst.Length > 0)
-                    {
-                        foreach (ProjectDepend ent in proDepLst)
-                        {
-                            ent.projectId = proEntity.projectId;
-                            dbcon.ProjectDepends.Add(ent);
+                    string savePath = Path.Combine(_env.ContentRootPath, "wwwroot/uponloads/Project/" + proEntity.projectId.ToString());
+                    if(Directory.Exists(savePath)){
+                        Directory.Delete(savePath);
+                        string[] fileinfo = Directory.GetFiles(savePath);
+                        foreach(string strFileName in fileinfo){
+                            System.IO.File.Delete(strFileName);
                         }
+                    }
+                    foreach (var file in files){
+                        var fileType = file.ContentType;
+                        var fileName = file.FileName;
+                        var guidName = Guid.NewGuid().ToString() + (fileType == "text/javascript" ? ".js" : ".css");
+                        using (var stream = new FileStream( Path.Combine(savePath ,guidName), FileMode.CreateNew))
+                        {
+                            file.CopyTo(stream);
+                            stream.Flush();
+                        }
+                       ProjectDepend  ent =new ProjectDepend();
+                        ent.projectId = proEntity.projectId;
+                        ent.fileName =fileName;
+                        ent.filePath = upPath +proEntity.projectId.ToString() +"/" + guidName;
+                        ent.fileType = fileType;
+                        dbcon.ProjectDepends.Add(ent);
                     }
                     dbcon.SaveChanges();
                 }
@@ -165,10 +248,15 @@ namespace WebApplication.Controllers
                     string strDel = string.Format("delete from ProjectDepend where projectId ={0};", proEntity.projectId);
                     dbcon.Database.ExecuteSqlCommand(strDel);
                     dbcon.SaveChanges();
+
+                    string savePath = Path.Combine(_env.ContentRootPath, "wwwroot/uponloads/Project/" + proEntity.projectId.ToString());
+                    if(Directory.Exists(savePath)){
+                        Directory.Delete(savePath,true);
+                    }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return Json("faild");
+                    return Json(ex.Message);
                 }
             }
             return Json("successs");
@@ -277,7 +365,7 @@ namespace WebApplication.Controllers
 #region API接口,未开始
 
         [HttpGetAttribute]
-        [RouteAttribute("/Project/API/{id?}")]
+        [RouteAttribute("/API/Project/{id?}")]
         [AllowAnonymous]
         public IActionResult ApiGet(int? id){
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
@@ -295,6 +383,9 @@ namespace WebApplication.Controllers
             }
         }
 
+
+
+     
 
 #endregion
    }

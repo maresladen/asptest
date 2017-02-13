@@ -173,7 +173,7 @@ namespace WebApplication.Controllers
  #endregion
 
 
-        #region API接口,未开始
+#region API接口,未开始
 
         [HttpGetAttribute]
         [RouteAttribute("/API/MarkDown/{id?}")]
@@ -185,7 +185,7 @@ namespace WebApplication.Controllers
             using (ApplicationDbContext dbcon = new ApplicationDbContext(dbconOption))
             {
                 mdEntity = dbcon.MarkDowns.Where(d => d.MdId == id).FirstOrDefault();
-                mdEntity.MdText ="";
+                // mdEntity.MdText ="";
             }
             if(mdEntity == null){
                 mdEntity =new MarkDown();
@@ -197,6 +197,6 @@ namespace WebApplication.Controllers
 
         #endregion
 
-    }
 
+    }
 }
