@@ -16,7 +16,8 @@ namespace WebApplication
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
-                .UseUrls("http://localhost:5000")
+                // .UseUrls("http://localhost:5000")
+                .UseUrls("http://*:5000")
                 .UseStartup<Startup>()
                 .Build();
 

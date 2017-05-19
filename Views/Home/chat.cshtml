@@ -1,0 +1,157 @@
+
+<h2>聊天室</h2>  
+<div id="vueTest">
+    <div class="col-sm-10">
+
+        <div v-for="msg in output">
+            <p v-bind:style="getstyle(msg.Ip)">{{msg.Ip}}：{{msg.Msg}}</p>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <ul>用户列表
+<li v-for="ip in userlist">
+{{ip}}
+</li>
+        </ul>
+        </div>
+           <div class="send">
+							    	<!-- <input type="text" name="" multiple="multiple"> -->
+							    	<textarea width="80%" id="postid"></textarea>
+							    	<button  v-on:click="myClick">发送</button>
+							    </div>
+</div>
+<!--
+<div id="vueTest">
+
+
+						<div class="panel panel-primary">
+						    <div class="panel-heading">
+						        <h3 class="panel-title">群1</h3>
+						    </div>
+						    <div class="panel-body">
+						        这是一个基本的面板
+
+						        <div class="content">
+						        	<div class="left">
+						        		 <div v-for="msg in output">
+                                             <span>
+                                             	<img src="images/headPic.png">
+                                             </span>
+
+                                             <span>
+            <p v-bind:style="getstyle(msg.Ip)">{{msg.Ip}}：{{msg.Msg}}</p>
+                                             </span>
+        </div>
+						        	</div>
+						        	<div class="right">
+    <div class="col-sm-2">
+        <ul>用户列表
+<li v-for="ip in userlist">
+{{ip}}
+</li>
+        </ul>
+        </div>
+						        	</div>
+						        	
+						        </div>
+						        <div class="send">
+							    	<textarea width="80%" id="postid"></textarea>
+							    	<button  v-on:click="myClick">发送</button>
+							    </div>
+						    </div>
+						</div>
+</div>-->
+
+<script>
+
+    var websocket;
+    var chartVue =new Vue({
+        el:'#vueTest',
+        data:{
+            wsUri :"ws://192.168.8.109:8888/chat",
+            // wsUri :"ws://echo.websocket.org/",
+            output:[],
+            input:[],
+            userlist:[],
+            leftstyle :{
+                "text-align" :"left",
+                "padding-left" :"20px"
+            },
+            rightstyle :{
+                "text-align" :"right",
+                "padding-right" :"20px"
+            }
+        },
+       methods: {
+            // onOpen: function (val) {
+                // this.writeToScreen("CONNECTED");
+                // this.doSend("WebSocket rocks");
+            // },
+            myClick :function(){
+
+                var temptext = $('#postid').val();
+                this.doSend(temptext);
+            },
+            onClose: function (val) {
+                var exitObj ={"Msg":"DISCONNECTED","Ip":"","IpList":""}
+                // websocket.OPEN =0;
+                this.writeToScreen(exitObj);
+                websocket.close();
+            },
+            onMessage: function (val) {
+                var msgObj = JSON.parse(val.data);
+                if(msgObj.IpList !=null && msgObj.IpList !=null ){
+                    this.userlist = msgObj.IpList;
+                }
+                this.writeToScreen(msgObj,true);
+            },
+            // onError: function (val) {
+            //     this.writeToScreen('ERROR:' + val.data);
+            // },
+            doSend: function (message) {
+                var sendObj ={"Msg":"","Ip":"我","IpList":""}
+                sendObj.Msg = message;
+                if(!websocket.OPEN){
+                    sendObj.Msg = '与聊天室断开，请刷新页面重新连接';
+                }
+                this.writeToScreen(sendObj,false);
+                websocket.send(message);
+            },
+            
+            writeToScreen: function (message) {
+                // var msgObj =JSON.parse(message);
+                this.output.push(message);
+            },
+            init: function () {
+                var that = this;
+                websocket = new WebSocket(this.wsUri);
+                // websocket.onopen = function (val) {
+                //     that.onOpen(val)
+                // };
+                // websocket.onclose = function (val) {
+                //     that.onClose(val)
+                // };
+                websocket.onmessage = function (val) {
+                    that.onMessage(val)
+                };
+                // websocket.onerror = function (val) {
+                //     that.onError(val)
+                // };
+            },
+            getstyle:function(ipaddr){
+                if(ipaddr == '我'){
+                    return this.rightstyle;
+                }
+                else{
+                    return this.leftstyles;
+                }
+            }
+    },
+        created:function(){
+            this.init();
+        }
+    })
+    
+    // window.addEventListener("load", chartVue.init, false);  
+
+</script>

@@ -20,6 +20,18 @@ namespace WebApplication.Controllers
         DbContextOptions<ApplicationDbContext> dbconOption;
 
         private readonly UserManager<ApplicationUser> _userManager;
+
+        /// <summary>
+        /// 聊天室
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult chat()
+        {
+            return View();
+        }
+
+
+
         public HomeController(IServiceProvider service,UserManager<ApplicationUser> userManager)
         {
             this.dbconOption = service.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
