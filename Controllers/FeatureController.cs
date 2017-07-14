@@ -244,6 +244,7 @@ namespace WebApplication.Controllers
                     FeatureDepModel tempEntity = new FeatureDepModel();
                     tempEntity.depSrc = fd.filePath;
                     tempEntity.depName = fd.fileName;
+                    // dict.ContainsKey[fd.fileType]
                     if (!dict[fd.fileType].Contains(tempEntity))
                     {
                         dict[fd.fileType].Add(tempEntity);
